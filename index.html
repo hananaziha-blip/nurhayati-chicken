@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nurhayati Chicken POS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Untuk format struk (bold, rata-tengah, gambar logo, potong kertas) via RAWBT -->
+    <script src="https://cdn.jsdelivr.net/npm/esc-pos-encoder@1.3.0/dist/esc-pos-encoder.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -83,9 +85,14 @@
                     </div>
                 </div>
             </div>
-            <button onclick="handleLogout()" class="p-2 text-navy/60 rounded-full hover:bg-platinum active:scale-95 transition-colors">
-                <svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            </button>
+            <div class="flex items-center gap-1">
+                <button id="reprint-btn" onclick="reprintLast()" title="Cetak ulang struk terakhir" class="hidden p-2 text-navy/60 rounded-full hover:bg-platinum active:scale-95 transition-colors">
+                    <svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                </button>
+                <button onclick="handleLogout()" class="p-2 text-navy/60 rounded-full hover:bg-platinum active:scale-95 transition-colors">
+                    <svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
+            </div>
         </header>
 
         <!-- CONTENT AREA: KASIR -->
@@ -499,6 +506,7 @@
             }
 
             updateSyncBadge();
+            loadReceiptLogo(); // preload di awal supaya cetak pertama tidak nunggu gambar
 
             // 2. Pantau status koneksi + antrian belum tersinkron
             window.addEventListener('online', () => { updateSyncBadge(); trySyncQueue(); });
@@ -694,40 +702,114 @@
             sheet.classList.toggle('translate-y-full');
         };
 
-        // Bangun teks struk dan tembak ke RAWBT. Selalu dipanggil terlepas dari
-        // status jaringan/sync -- RAWBT murni intent ke aplikasi lain di HP,
-        // jadi tidak pernah butuh koneksi ke GAS.
-        const printReceipt = (trx) => {
-            let receiptText = `NURHAYATI CHICKEN\n`;
-            receiptText += `Klumprit, Rt 01 RW 01, Surojoyo,\n`;
-            receiptText += `Candimulyo, Magelang\n`;
-            receiptText += `(Depan lapangan Candimulyo)\n`;
-            receiptText += `================================\n`;
-            trx.items.forEach(item => {
-                receiptText += `${item.name}\n`;
-                receiptText += `${item.qty} x ${item.price} = ${item.qty * item.price}\n`;
-            });
-            receiptText += `================================\n`;
-            receiptText += `TOTAL: ${trx.total}\n`;
-            receiptText += `================================\n`;
-            receiptText += `Kasir: ${trx.kasir}\n`;
-            receiptText += `Terima Kasih\n`;
+        // === CETAK RAWBT (ESC/POS) ===
+        const RECEIPT_LOGO_SRC = 'Nurhayati-BW.png'; // sudah ada di repo yang sama dengan index.html
+        const RAWBT_PACKAGE = 'ru.a402d.rawbtprinter';
+        const RAWBT_PLAYSTORE_URL = 'https://play.google.com/store/apps/details?id=' + RAWBT_PACKAGE;
+        let lastPrintedTrx = null;
 
-            const encoded = encodeURI(receiptText);
-            const intentUrl = `intent://${encoded}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+        // Muat logo sekali saja lalu simpan di memori -- panggilan berikutnya
+        // langsung pakai hasil yang sudah ada, tidak fetch ulang tiap cetak.
+        let receiptLogoPromise = null;
+        const loadReceiptLogo = () => {
+            if (!receiptLogoPromise) {
+                receiptLogoPromise = new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = () => { console.warn('Logo struk gagal dimuat, lanjut cetak tanpa logo'); resolve(null); };
+                    img.src = RECEIPT_LOGO_SRC;
+                });
+            }
+            return receiptLogoPromise;
+        };
 
-            setTimeout(() => {
-                try {
-                    const a = document.createElement('a');
-                    a.href = intentUrl;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                } catch (e) {
-                    console.warn("Intent ditolak oleh browser pratinjau.");
-                    showToast("Cetak RAWBT hanya berjalan di Android", "error");
+        // Lebar/tinggi gambar utk ESC/POS wajib kelipatan 8.
+        const roundTo8 = (n) => Math.max(8, Math.round(n / 8) * 8);
+
+        // Ubah hasil encode (Uint8Array) jadi base64, dipecah per-chunk
+        // supaya aman untuk data yang cukup panjang (ada gambar logo di dalamnya).
+        const bytesToBase64 = (bytes) => {
+            let binary = '';
+            const chunkSize = 0x8000;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+            }
+            return window.btoa(binary);
+        };
+
+        // Kirim hasil encode ESC/POS ke RAWBT lewat intent Android. Kalau RAWBT
+        // belum terinstal, browser diarahkan ke halaman Play Store-nya otomatis.
+        const sendToRawBT = (encoded) => {
+            const base64 = bytesToBase64(encoded);
+            const fallback = encodeURIComponent(RAWBT_PLAYSTORE_URL);
+            const intentUrl = `intent:base64,${base64}#Intent;scheme=rawbt;package=${RAWBT_PACKAGE};S.browser_fallback_url=${fallback};end;`;
+            try {
+                const a = document.createElement('a');
+                a.href = intentUrl;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } catch (e) {
+                console.warn("Intent ditolak oleh browser pratinjau.", e);
+                showToast("Cetak RAWBT hanya berjalan di Android", "error");
+            }
+        };
+
+        // Bangun struk berformat (logo, bold, rata-tengah, potong kertas) dan
+        // tembak ke RAWBT. Selalu dipanggil terlepas dari status jaringan/sync --
+        // RAWBT murni intent ke aplikasi lain di HP, tidak pernah butuh koneksi ke GAS.
+        const printReceipt = async (trx) => {
+            try {
+                if (typeof EscPosEncoder === 'undefined') {
+                    showToast('Modul cetak belum siap, coba lagi sebentar', 'error');
+                    return;
                 }
-            }, 500);
+                const logo = await loadReceiptLogo();
+                const encoder = new EscPosEncoder();
+                encoder.initialize().align('center');
+
+                if (logo) {
+                    const w = 240;
+                    const h = roundTo8(w * (logo.naturalHeight / logo.naturalWidth));
+                    encoder.image(logo, w, h);
+                    encoder.newline();
+                }
+
+                encoder
+                    .bold(true).text('NURHAYATI CHICKEN').bold(false).newline()
+                    .text('Klumprit, Rt 01 RW 01, Surojoyo,').newline()
+                    .text('Candimulyo, Magelang').newline()
+                    .text('(Depan lapangan Candimulyo)').newline()
+                    .text('Maps: Warung Nurhayati Friedchicken').newline()
+                    .align('left')
+                    .text('================================').newline();
+
+                trx.items.forEach(item => {
+                    encoder.text(item.name).newline();
+                    encoder.text(`${item.qty} x ${formatRp(item.price)} = ${formatRp(item.qty * item.price)}`).newline();
+                });
+
+                encoder
+                    .text('================================').newline()
+                    .bold(true).text(`TOTAL: ${formatRp(trx.total)}`).bold(false).newline()
+                    .text('================================').newline()
+                    .text(`Kasir: ${trx.kasir}`).newline()
+                    .align('center')
+                    .text('Terima Kasih').newline()
+                    .newline().newline()
+                    .cut();
+
+                sendToRawBT(encoder.encode());
+            } catch (e) {
+                console.warn('Gagal menyiapkan struk untuk dicetak', e);
+                showToast('Gagal menyiapkan cetakan struk', 'error');
+            }
+        };
+
+        const reprintLast = () => {
+            if (!lastPrintedTrx) { showToast('Belum ada transaksi untuk dicetak ulang', 'error'); return; }
+            showToast('Mencetak ulang struk...');
+            printReceipt(lastPrintedTrx);
         };
 
         const processCheckout = async () => {
@@ -759,6 +841,8 @@
             clearCart();
 
             // 2. Cetak struk -- selalu jalan, tidak menunggu atau bergantung status server.
+            lastPrintedTrx = transactionData;
+            document.getElementById('reprint-btn').classList.remove('hidden');
             printReceipt(transactionData);
 
             // 3. Coba sinkronkan ke server di belakang layar (best-effort, tidak
@@ -919,33 +1003,34 @@
             document.getElementById('total-trx-month').innerText = totalTrx;
         };
 
-        const printRecap = (dateString) => {
+        const printRecap = async (dateString) => {
             const rep = mainReports.find(r => r.date === dateString);
             if(!rep) return;
-            
-            let text = `REKAPITULASI HARIAN\n`;
-            text += `NURHAYATI CHICKEN\n`;
-            text += `Tanggal: ${dateString}\n`;
-            text += `================================\n`;
-            text += `Total Transaksi : ${rep.trx}\n`;
-            text += `Total Omset     : ${rep.omset}\n`;
-            text += `================================\n`;
 
-            const encoded = encodeURI(text);
-            const intentUrl = `intent://${encoded}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
-            
-            showToast('Mencetak rekap...');
-            setTimeout(() => { 
-                try {
-                    const a = document.createElement('a');
-                    a.href = intentUrl;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                } catch (e) {
-                    showToast("Cetak RAWBT hanya berjalan di Android", "error");
+            try {
+                if (typeof EscPosEncoder === 'undefined') {
+                    showToast('Modul cetak belum siap, coba lagi sebentar', 'error');
+                    return;
                 }
-            }, 500);
+                const encoder = new EscPosEncoder();
+                encoder.initialize().align('center')
+                    .bold(true).text('REKAPITULASI HARIAN').bold(false).newline()
+                    .text('NURHAYATI CHICKEN').newline()
+                    .align('left')
+                    .text('================================').newline()
+                    .text(`Tanggal         : ${dateString}`).newline()
+                    .text(`Total Transaksi : ${rep.trx}`).newline()
+                    .text(`Total Omset     : ${formatRp(rep.omset)}`).newline()
+                    .text('================================').newline()
+                    .newline().newline()
+                    .cut();
+
+                showToast('Mencetak rekap...');
+                sendToRawBT(encoder.encode());
+            } catch (e) {
+                console.warn('Gagal menyiapkan rekap untuk dicetak', e);
+                showToast('Gagal menyiapkan cetakan rekap', 'error');
+            }
         };
 
         const renderAdminUsers = () => {
