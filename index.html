@@ -1,190 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Nurhayati Chicken • POS</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
- tailwind.config = {
-  theme: { extend: { colors: { navy:'#14213D', yellow:'#FCA311', platinum:'#E5E5E5', white:'#FFFFFF' } } }
- }
-</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--navy:#14213D;--yellow:#FCA311;--platinum:#E5E5E5;--white:#FFFFFF}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--platinum);font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent}
-body{color:var(--navy);overflow:hidden}
-button,input,select{font:inherit}
-button{-webkit-user-select:none;user-select:none}
-.hide-scroll::-webkit-scrollbar{display:none}.hide-scroll{-ms-overflow-style:none;scrollbar-width:none}
-.icon-svg{stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}
-.app-shell{width:100%;max-width:430px;height:100dvh;background:var(--platinum);position:relative;overflow:hidden;box-shadow:0 0 40px rgba(20,33,61,.14)}
-@media(min-width:640px){.app-shell{height:92dvh;max-height:900px;border-radius:28px}.outer-pad{padding:4vh 0}.body-bg{display:flex;align-items:center;justify-content:center;height:100dvh}}
-.body-bg{background:linear-gradient(180deg,#f7f7f8 0%,#e5e5e5 100%)}
-.safe-top{padding-top:max(10px,env(safe-area-inset-top))}.safe-bottom{padding-bottom:max(10px,env(safe-area-inset-bottom))}
-.glass{background:rgba(255,255,255,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.bento-card{background:#fff;border:1px solid rgba(20,33,61,.08);border-radius:20px;box-shadow:0 8px 24px rgba(20,33,61,.06)}
-.touch{transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}.touch:active{transform:scale(.97)}
-.brand-dot{width:8px;height:8px;background:var(--yellow);border-radius:99px;display:inline-block;box-shadow:0 0 0 4px rgba(252,163,17,.15)}
-.login-blob{position:absolute;inset:auto -80px -130px auto;width:280px;height:280px;border-radius:50%;background:rgba(252,163,17,.18)}
-.login-blob-2{position:absolute;inset:40px auto auto -140px;width:250px;height:250px;border-radius:50%;background:rgba(20,33,61,.07)}
-.login-panel{background:rgba(255,255,255,.95);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.logo-ring{box-shadow:0 10px 30px rgba(20,33,61,.15),0 0 0 8px rgba(252,163,17,.10)}
-.pin-input{height:60px;font-size:25px;letter-spacing:.32em}
-.primary-btn{background:var(--yellow);color:var(--navy);box-shadow:0 12px 24px rgba(252,163,17,.22)}
-.primary-btn:hover{filter:saturate(1.05)}
-.secondary-btn{background:var(--navy);color:#fff}
-.section-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:rgba(20,33,61,.48)}
-.pos-hero{background:linear-gradient(135deg,#14213d 0%,#1c3157 55%,#14213d 100%);color:#fff;position:relative;overflow:hidden}
-.pos-hero:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;right:-50px;top:-55px;background:rgba(252,163,17,.2)}
-.pos-hero:before{content:"🍗";position:absolute;right:16px;bottom:2px;font-size:64px;transform:rotate(-9deg);filter:drop-shadow(0 10px 10px rgba(0,0,0,.18))}
-.menu-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-#menu-grid .bento-card{position:relative;min-height:154px;padding:16px;border-radius:22px;overflow:hidden;background:linear-gradient(180deg,#fff 0%,#fbfbfc 100%);border-color:rgba(20,33,61,.08)}
-#menu-grid .bento-card:after{content:"";position:absolute;right:-24px;bottom:-34px;width:100px;height:100px;border-radius:50%;background:rgba(252,163,17,.12)}
-#menu-grid .bento-card svg{width:52px!important;height:52px!important;right:12px!important;bottom:8px!important;color:rgba(252,163,17,.32)!important;stroke-width:1.4}
-#menu-grid .bento-card:hover{border-color:rgba(252,163,17,.65);box-shadow:0 12px 26px rgba(20,33,61,.10);transform:translateY(-2px)}
-#menu-grid .bento-card .z-10{position:relative;z-index:3}
-#menu-grid .bento-card span:first-child{font-size:14px!important;max-width:75%}
-#menu-grid .bento-card span:nth-child(2){margin-top:8px!important;border-radius:999px!important}
-#admin-menu-list>div,#admin-user-list>div,#report-date-list>div{border-radius:18px}
-.nav-floating{position:absolute;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));height:64px;border-radius:22px;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(20,33,61,.08);box-shadow:0 18px 36px rgba(20,33,61,.18);padding:7px;gap:4px}
-.nav-floating button{border-radius:16px;position:relative}.nav-floating button.text-yellow{background:rgba(252,163,17,.14)}
-.nav-floating button.text-yellow:after{content:"";position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:18px;height:3px;border-radius:99px;background:var(--yellow)}
-.cart-bar{position:absolute;left:12px;right:12px;bottom:82px;border-radius:22px;padding:10px;background:var(--navy);color:#fff;box-shadow:0 18px 36px rgba(20,33,61,.20);border:1px solid rgba(255,255,255,.08)}
-.cart-bar .cart-main{background:var(--yellow);color:var(--navy);border-radius:17px;padding:10px 12px}
-.cart-bar.bottom-\[68px\]{bottom:82px!important}.cart-bar.bottom-0{bottom:max(10px,env(safe-area-inset-bottom))!important}
-.sheet{background:var(--platinum)}
-.sheet-head{border-bottom:1px solid rgba(20,33,61,.08)}
-.sheet-footer{box-shadow:0 -16px 28px rgba(20,33,61,.07)}
-.modal-backdrop{background:rgba(20,33,61,.72);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-.modal-card{border-radius:26px;box-shadow:0 28px 60px rgba(0,0,0,.22)}
-.skeleton{background:linear-gradient(90deg,#f6f7f8 0%,#e9eaed 50%,#f6f7f8 100%);background-size:300% 100%;animation:shimmer 1.2s infinite}@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-100% 0}}
-.toast{border-radius:16px!important;box-shadow:0 18px 34px rgba(20,33,61,.20)!important}
-/* Admin dynamic cards */
-#admin-menu-list>div,#admin-user-list>div{padding:14px!important;border:1px solid rgba(20,33,61,.08)!important;box-shadow:0 7px 18px rgba(20,33,61,.05)!important}
-#admin-menu-list>div>div:first-child>div:first-child,#admin-user-list>div>div:first-child>div:first-child{border-radius:14px!important;background:#f6f6f7!important}
-/* Report */
-#total-omset-month{font-size:26px!important;letter-spacing:-.03em}
-#report-date-list>div{border-left-width:5px!important;box-shadow:0 7px 18px rgba(20,33,61,.05)!important}
-</style>
-</head>
-<body class="body-bg outer-pad">
-<div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[2000] flex flex-col gap-2 w-[calc(100%-24px)] max-w-md pointer-events-none"></div>
-<div id="loading-overlay" class="fixed inset-0 bg-white/90 z-[9999] flex flex-col items-center justify-center hidden">
- <div class="w-16 h-16 rounded-2xl bg-navy flex items-center justify-center shadow-xl mb-4">
-  <svg class="animate-spin h-8 w-8 text-yellow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
- </div>
- <span class="font-extrabold text-navy" id="loading-msg">Memproses...</span>
- <span class="text-xs text-navy/45 font-semibold mt-1">Nurhayati Chicken</span>
-</div>
-
-<div class="app-shell">
- <!-- LOGIN -->
- <div id="login-screen" class="w-full h-full relative flex flex-col justify-between p-6 safe-top safe-bottom overflow-hidden login-panel">
-  <div class="login-blob"></div><div class="login-blob-2"></div>
-  <div class="relative z-10 pt-6">
-   <div class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[.18em] text-navy/45"><span class="brand-dot"></span> Fried chicken • Magelang</div>
-   <div class="mt-10 text-center">
-    <img src="Nurhayati-CL.png" alt="Logo Nurhayati Chicken" class="w-28 h-28 mx-auto rounded-[30px] object-cover logo-ring border-4 border-white" id="logo-login" onerror="this.src='https://placehold.co/150x150/14213D/FCA311?text=NC'">
-    <h1 class="text-[32px] leading-tight font-extrabold tracking-tight text-navy mt-6">Nurhayati Chicken</h1>
-    <p class="text-navy/55 mt-2 font-medium">Kasir digital yang simpel, cepat, dan siap cetak.</p>
-   </div>
-  </div>
-  <div class="relative z-10">
-   <div id="gas-warning" class="hidden mb-4 bg-red-50 text-red-700 p-3 rounded-2xl border border-red-100 text-xs font-bold text-center">URL Google Apps Script belum diisi! Silakan edit index.html</div>
-   <div class="bg-white rounded-[26px] border border-navy/5 shadow-[0_18px_40px_rgba(20,33,61,.08)] p-5">
-    <div class="flex items-center justify-between mb-3"><label class="text-xs font-extrabold uppercase tracking-widest text-navy/55">PIN Akses</label><span class="text-[10px] font-bold bg-platinum rounded-full px-2 py-1 text-navy/50">4 digit</span></div>
-    <input type="password" id="pin-input" class="pin-input w-full border border-platinum rounded-2xl px-4 bg-platinum/30 text-center font-extrabold text-navy focus:outline-none focus:ring-2 focus:ring-yellow" placeholder="••••" autocomplete="off" onkeydown="if(event.key === 'Enter') handleLogin()">
-    <button onclick="handleLogin()" class="w-full primary-btn font-extrabold rounded-2xl py-4 mt-3 touch">Masuk ke Kasir</button>
-   </div>
-   <p class="text-center text-[10px] text-navy/40 font-semibold mt-5">Made for quick orders • Thermal friendly</p>
-  </div>
- </div>
-
- <!-- APP -->
- <div id="main-app" class="w-full h-full relative hidden">
-  <header class="glass px-4 py-3 safe-top border-b border-navy/5 flex justify-between items-center shrink-0 z-40">
-   <div class="flex items-center gap-3 min-w-0">
-    <div class="relative shrink-0"><img src="Nurhayati-CL.png" alt="Logo" class="w-10 h-10 rounded-2xl object-cover shadow-sm border-2 border-white" id="logo-header" onerror="this.src='https://placehold.co/100x100/14213D/FCA311?text=NC'"><span class="absolute -right-1 -bottom-1 brand-dot border-2 border-white"></span></div>
-    <div class="min-w-0"><h1 class="font-extrabold text-base text-navy leading-tight truncate">Nurhayati Chicken</h1><span id="role-badge" class="inline-flex mt-1 text-[9px] px-2 py-1 rounded-full bg-navy text-yellow font-extrabold uppercase tracking-wider max-w-full truncate">Kasir</span></div>
-   </div>
-   <button onclick="handleLogout()" class="w-10 h-10 rounded-2xl bg-platinum/70 text-navy/60 flex items-center justify-center touch" aria-label="Keluar"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></button>
-  </header>
-
-  <main class="absolute inset-0 pt-[74px] overflow-y-auto hide-scroll px-4 pb-40" id="pos-view">
-   <div class="pos-hero rounded-[26px] p-5 mt-2 mb-5 shadow-lg min-h-[150px]">
-    <div class="relative z-10 max-w-[74%]"><div class="text-[10px] uppercase tracking-[.18em] font-extrabold text-yellow/90 mb-2">Hari ini enaknya apa?</div><div class="text-[23px] leading-tight font-extrabold">Ayam renyah,<br>pesan sat-set.</div><div class="text-xs text-white/65 font-medium mt-3">Tap menu untuk menambah pesanan.</div></div>
-   </div>
-   <div class="flex items-end justify-between mb-3"><div><div class="section-kicker">Menu favorit</div><h2 class="text-xl font-extrabold tracking-tight mt-1">Pilih Pesanan</h2></div><div class="text-[10px] font-bold bg-white rounded-full px-3 py-2 border border-navy/5 text-navy/50">2 kolom • cepat</div></div>
-   <div id="menu-grid" class="menu-grid grid gap-3"></div>
-  </main>
-
-  <main class="absolute inset-0 pt-[74px] overflow-y-auto hide-scroll px-4 pb-28 hidden" id="admin-menu-view">
-   <div class="pt-3 pb-4 flex justify-between items-end"><div><div class="section-kicker">Admin</div><h2 class="text-2xl font-extrabold tracking-tight">Manajemen Menu</h2></div><button onclick="openMenuForm()" class="primary-btn text-sm font-extrabold px-4 py-3 rounded-2xl touch">+ Tambah</button></div>
-   <div class="bg-white rounded-2xl p-3 mb-4 flex items-center gap-3 border border-navy/5"><div class="w-10 h-10 rounded-xl bg-yellow/15 flex items-center justify-center text-lg">🍗</div><p class="text-xs font-semibold text-navy/55">Atur harga dan jenis menu yang muncul di kasir.</p></div>
-   <div class="space-y-3" id="admin-menu-list"></div>
-  </main>
-
-  <main class="absolute inset-0 pt-[74px] overflow-y-auto hide-scroll px-4 pb-28 hidden" id="admin-report-view">
-   <div class="pt-3 pb-4 flex items-center justify-between"><div><div class="section-kicker">Admin</div><h2 class="text-2xl font-extrabold tracking-tight">Laporan Penjualan</h2></div><div class="flex gap-2"><button onclick="changeReportMonth(-1)" class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center border border-navy/5 shadow-sm touch"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg></button><button onclick="changeReportMonth(1)" class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center border border-navy/5 shadow-sm touch"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></button></div></div>
-   <div class="pos-hero rounded-[26px] p-5 mb-4 shadow-lg"><div class="flex justify-between items-end relative z-10"><div><p class="text-[10px] uppercase tracking-widest font-extrabold text-white/55">Omset bulan</p><p class="text-xl font-extrabold text-yellow mt-1" id="report-month-label">Bulan Ini</p><p class="text-2xl font-extrabold mt-3" id="total-omset-month">Rp 0</p></div><div class="text-right"><p class="text-[10px] uppercase tracking-widest font-extrabold text-white/55">Transaksi</p><p class="text-3xl font-extrabold mt-1" id="total-trx-month">0</p></div></div></div>
-   <div class="section-kicker mb-3">Ringkasan harian</div><div class="space-y-3" id="report-date-list"></div>
-  </main>
-
-  <main class="absolute inset-0 pt-[74px] overflow-y-auto hide-scroll px-4 pb-28 hidden" id="admin-user-view">
-   <div class="pt-3 pb-4 flex justify-between items-end"><div><div class="section-kicker">Admin</div><h2 class="text-2xl font-extrabold tracking-tight">Tim Kasir</h2></div><button onclick="openUserForm()" class="primary-btn text-sm font-extrabold px-4 py-3 rounded-2xl touch">+ Tambah</button></div>
-   <div class="bg-white rounded-2xl p-3 mb-4 flex items-center gap-3 border border-navy/5"><div class="w-10 h-10 rounded-xl bg-navy text-yellow flex items-center justify-center">✦</div><p class="text-xs font-semibold text-navy/55">Kelola akses staf dan peran Admin/Kasir.</p></div>
-   <div class="space-y-3" id="admin-user-list"></div>
-  </main>
-
-  <div id="cart-summary" class="cart-bar cart-cashier flex justify-between items-center z-40 cursor-pointer touch" onclick="toggleCartSheet()">
-   <div class="flex items-center gap-3 min-w-0"><div class="cart-main relative shrink-0"><svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path><span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-extrabold px-1.5 py-1 rounded-full hidden">0</span></div><div class="min-w-0"><p class="text-[9px] uppercase tracking-widest font-extrabold text-white/55">Total pesanan</p><p class="text-lg font-extrabold text-white truncate" id="cart-total-summary">Rp 0</p></div></div>
-   <div class="flex items-center gap-2 text-yellow"><span class="text-[10px] font-extrabold uppercase tracking-wider">Lihat</span><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15l7-7 7 7"></path></svg></div>
-  </div>
-
-  <nav id="admin-nav" class="nav-floating flex hidden z-30">
-   <button onclick="switchView('pos')" class="flex-1 py-2 flex flex-col items-center justify-center gap-1 text-yellow transition-colors" id="nav-pos"><svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a2 2 0 104 0v-4a1 1 0 00-1-1h-2a1 1 0 00-1 1v4"></path></svg><span class="text-[9px] font-extrabold">Kasir</span></button>
-   <button onclick="switchView('menu')" class="flex-1 py-2 flex flex-col items-center justify-center gap-1 text-navy/40 transition-colors" id="nav-menu"><svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg><span class="text-[9px] font-extrabold">Menu</span></button>
-   <button onclick="switchView('user')" class="flex-1 py-2 flex flex-col items-center justify-center gap-1 text-navy/40 transition-colors" id="nav-user"><svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg><span class="text-[9px] font-extrabold">Tim</span></button>
-   <button onclick="switchView('report')" class="flex-1 py-2 flex flex-col items-center justify-center gap-1 text-navy/40 transition-colors" id="nav-report"><svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg><span class="text-[9px] font-extrabold">Laporan</span></button>
-  </nav>
-
-  <div id="cart-sheet" class="sheet absolute inset-0 z-[1000] flex flex-col transform translate-y-full transition-transform duration-300">
-   <div class="safe-top px-4 py-4 sheet-head flex justify-between items-center glass z-10"><div><div class="section-kicker">Checkout</div><h2 class="font-extrabold text-xl text-navy mt-1">Rincian Pesanan</h2></div><button onclick="toggleCartSheet()" class="w-10 h-10 bg-platinum rounded-2xl text-navy flex items-center justify-center touch"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
-   <div class="flex-1 overflow-y-auto p-4 hide-scroll"><div id="cart-items-wrapper" class="space-y-3"></div><div class="text-center text-navy/35 mt-16" id="empty-cart-msg"><div class="text-5xl mb-3">🍗</div><div class="text-sm font-extrabold">Keranjang masih kosong</div><div class="text-xs font-medium mt-1">Tambah menu dari halaman kasir.</div></div></div>
-   <div class="sheet-footer p-4 safe-bottom bg-white space-y-3 rounded-t-[28px] z-10"><div class="flex justify-between items-center px-1"><span class="section-kicker">Total Belanja</span><span class="font-extrabold text-2xl text-navy" id="cart-total-final">Rp 0</span></div><button onclick="processCheckout()" class="w-full primary-btn font-extrabold rounded-2xl py-4 flex items-center justify-center gap-2 touch"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>Bayar & Cetak RAWBT</button><button onclick="clearCart()" class="w-full bg-platinum text-navy/65 font-extrabold rounded-2xl py-3 touch">Bersihkan Keranjang</button></div>
-  </div>
- </div>
-</div>
-
-<!-- MODAL VARIANT -->
-<div id="modal-variant" class="fixed inset-0 modal-backdrop z-[1000] hidden flex items-end sm:items-center justify-center p-3 sm:p-4">
- <div class="bg-white modal-card w-full max-w-sm overflow-hidden transform scale-95 transition-transform shadow-2xl" id="modal-variant-content">
-  <div class="p-4 border-b border-platinum flex justify-between items-center"><div><div class="section-kicker">Menu ayam</div><h3 class="font-extrabold text-lg text-navy mt-1">Pilih Ukuran Daging</h3></div><button onclick="closeVariantModal()" class="w-10 h-10 bg-platinum rounded-2xl text-navy/60 flex items-center justify-center touch"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
-  <div class="p-4 space-y-3 bg-platinum/35"><button onclick="addVariantToCart('Daging Standar', 7000)" class="w-full bg-white border border-platinum rounded-2xl p-4 flex justify-between items-center touch hover:border-yellow"><div class="flex items-center gap-3"><span class="text-2xl">🍗</span><span class="font-extrabold text-navy">Standar</span></div><span class="bg-yellow text-navy px-3 py-2 rounded-xl font-extrabold text-sm">Rp 7.000</span></button><button onclick="addVariantToCart('Daging Besar', 8000)" class="w-full bg-white border border-platinum rounded-2xl p-4 flex justify-between items-center touch hover:border-yellow"><div class="flex items-center gap-3"><span class="text-2xl">🍗</span><span class="font-extrabold text-navy">Besar</span></div><span class="bg-yellow text-navy px-3 py-2 rounded-xl font-extrabold text-sm">Rp 8.000</span></button></div>
- </div>
-</div>
-
-<!-- MODAL MENU FORM -->
-<div id="modal-menu-form" class="fixed inset-0 modal-backdrop z-[1000] hidden flex items-end sm:items-center justify-center p-3 sm:p-4">
- <div class="bg-white modal-card w-full max-w-sm overflow-hidden transform scale-95 transition-transform shadow-2xl" id="modal-menu-form-content">
-  <div class="p-4 border-b border-platinum flex justify-between items-center"><div><div class="section-kicker">Katalog</div><h3 class="font-extrabold text-lg text-navy mt-1" id="menu-form-title">Tambah Menu</h3></div><button onclick="closeMenuForm()" class="w-10 h-10 bg-platinum rounded-2xl text-navy/60 flex items-center justify-center touch"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
-  <div class="p-4 space-y-4 bg-platinum/35"><input type="hidden" id="form-menu-id"><div><label class="block text-[10px] uppercase tracking-widest font-extrabold text-navy/55 mb-1.5">Nama Menu</label><input type="text" id="form-menu-name" class="w-full border border-platinum rounded-2xl px-4 py-3 bg-white text-navy font-semibold focus:outline-none focus:ring-2 focus:ring-yellow"></div><div><label class="block text-[10px] uppercase tracking-widest font-extrabold text-navy/55 mb-1.5">Harga (Rp)</label><input type="number" id="form-menu-price" class="w-full border border-platinum rounded-2xl px-4 py-3 bg-white text-navy font-semibold focus:outline-none focus:ring-2 focus:ring-yellow"></div><div><label class="block text-[10px] uppercase tracking-widest font-extrabold text-navy/55 mb-1.5">Kategori Icon & Tipe</label><select id="form-menu-icon" class="w-full border border-platinum rounded-2xl px-4 py-3 bg-white text-navy font-semibold focus:outline-none focus:ring-2 focus:ring-yellow"><option value="chicken_normal">Ayam (Normal)</option><option value="chicken_popup">Ayam (Popup Varian Harga)</option><option value="snack_normal">Nasi / Snack / Ekstra (Normal)</option><option value="drink_normal">Minuman (Normal)</option></select></div><button onclick="saveMenu()" class="w-full secondary-btn font-extrabold rounded-2xl py-3.5 mt-1 touch">Simpan Menu</button></div>
- </div>
-</div>
-
-<!-- MODAL USER FORM -->
-<div id="modal-user-form" class="fixed inset-0 modal-backdrop z-[1000] hidden flex items-end sm:items-center justify-center p-3 sm:p-4">
- <div class="bg-white modal-card w-full max-w-sm overflow-hidden transform scale-95 transition-transform shadow-2xl" id="modal-user-form-content">
-  <div class="p-4 border-b border-platinum flex justify-between items-center"><div><div class="section-kicker">Akses staf</div><h3 class="font-extrabold text-lg text-navy mt-1" id="user-form-title">Tambah Staf</h3></div><button onclick="closeUserForm()" class="w-10 h-10 bg-platinum rounded-2xl text-navy/60 flex items-center justify-center touch"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg></button></div>
-  <div class="p-4 space-y-4 bg-platinum/35"><input type="hidden" id="form-user-id"><div><label class="block text-[10px] uppercase tracking-widest font-extrabold text-navy/55 mb-1.5">Nama Staf</label><input type="text" id="form-user-name" class="w-full border border-platinum rounded-2xl px-4 py-3 bg-white text-navy font-semibold focus:outline-none focus:ring-2 focus:ring-yellow" placeholder="Cth: Siti"></div><div><label class="block text-[10px] uppercase tracking-widest font-extrabold text-navy/55 mb-1.5">PIN Akses (4 Digit)</label><input type="password" id="form-user-pin" class="w-full border border-platinum rounded-2xl px-4 py-3 bg-white text-navy font-semibold focus:outline-none focus:ring-2 focus:ring-yellow" placeholder="Cth: 1234"></div><div><label class="block text-[10px] uppercase tracking-widest font-extrabold text-navy/55 mb-1.5">Jabatan</label><select id="form-user-role" class="w-full border border-platinum rounded-2xl px-4 py-3 bg-white text-navy font-semibold focus:outline-none focus:ring-2 focus:ring-yellow"><option value="Kasir">Kasir</option><option value="Admin">Admin</option></select></div><button onclick="saveUser()" class="w-full secondary-btn font-extrabold rounded-2xl py-3.5 mt-1 touch">Simpan Data</button></div>
- </div>
-</div>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nurhayati Chicken POS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -208,7 +28,184 @@ button{-webkit-user-select:none;user-select:none}
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .icon-svg { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
         .shimmer { background: #f6f7f8; background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%); background-repeat: no-repeat; background-size: 1000px 100%; animation-duration: 1.5s; animation-fill-mode: forwards; animation-iteration-count: infinite; animation-name: placeholderShimmer; animation-timing-function: linear; }
+
         @keyframes placeholderShimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
+
+        :root {
+            --navy: #14213D;
+            --orange: #FCA311;
+            --platinum: #E5E5E5;
+            --white: #FFFFFF;
+            --muted: #667085;
+            --danger: #EF4444;
+            --shadow-soft: 0 12px 34px rgba(20,33,61,.10);
+            --shadow-float: 0 18px 42px rgba(20,33,61,.18);
+        }
+        * { box-sizing: border-box; }
+        html, body { overscroll-behavior: none; }
+        body {
+            background:
+                radial-gradient(circle at 10% 0%, rgba(252,163,17,.18), transparent 28%),
+                linear-gradient(160deg, #f8f9fb 0%, #E5E5E5 100%);
+            color: var(--navy);
+        }
+        button, input, select { min-height: 44px; }
+        button { touch-action: manipulation; }
+        button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid rgba(252,163,17,.38);
+            outline-offset: 2px;
+        }
+        .bento-card {
+            border: 1px solid rgba(20,33,61,.07);
+            border-radius: 22px;
+            box-shadow: 0 8px 24px rgba(20,33,61,.07);
+        }
+        #login-screen {
+            overflow: hidden;
+            justify-content: flex-start;
+            padding: 0;
+            background: var(--white);
+        }
+        #login-screen::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto;
+            height: 43%;
+            background:
+                radial-gradient(circle at 84% 18%, rgba(255,255,255,.18) 0 8%, transparent 8.5%),
+                radial-gradient(circle at 12% 74%, rgba(252,163,17,.24) 0 14%, transparent 14.5%),
+                linear-gradient(145deg, #14213D 0%, #1d315d 100%);
+            border-radius: 0 0 38px 38px;
+        }
+        #login-screen > .text-center {
+            position: relative;
+            z-index: 1;
+            width: calc(100% - 40px);
+            margin: 38px 20px 24px;
+            padding: 22px 18px 28px;
+            color: white;
+        }
+        #logo-login {
+            width: 104px; height: 104px;
+            border: 6px solid rgba(255,255,255,.95);
+            box-shadow: 0 14px 34px rgba(0,0,0,.22);
+        }
+        #login-screen h1 { color: white; letter-spacing: -.04em; }
+        #login-screen .text-center p { color: rgba(255,255,255,.70); }
+        #login-screen > .space-y-4 {
+            position: relative;
+            z-index: 2;
+            margin: -2px 20px 20px;
+            padding: 22px;
+            border-radius: 26px;
+            background: white;
+            box-shadow: var(--shadow-float);
+            border: 1px solid rgba(20,33,61,.06);
+        }
+        #pin-input {
+            height: 58px;
+            border: 2px solid #E5E5E5;
+            background: #f8f9fb;
+            letter-spacing: .45em;
+        }
+        #login-screen button[onclick="handleLogin()"] {
+            height: 56px;
+            border-radius: 18px;
+            box-shadow: 0 10px 24px rgba(252,163,17,.28);
+        }
+        #login-screen button[onclick="handleLogin()"]::after { content: '  →'; }
+        #main-app { background: #f3f4f6; }
+        #main-app > header {
+            padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+            border: 0;
+            background: linear-gradient(140deg, #14213D 0%, #1b2c52 100%);
+            color: white;
+            box-shadow: 0 8px 28px rgba(20,33,61,.18);
+        }
+        #main-app > header h1 { color: white; }
+        #main-app > header button { color: rgba(255,255,255,.72); }
+        #logo-header { border-color: rgba(255,255,255,.8); width: 44px; height: 44px; }
+        #role-badge { background: var(--orange); color: var(--navy); }
+        #pos-view, #admin-menu-view, #admin-report-view, #admin-user-view {
+            background:
+                radial-gradient(circle at 100% 0%, rgba(252,163,17,.11), transparent 26%),
+                #f5f6f8;
+        }
+        #pos-view > h2 {
+            margin: 4px 0 14px;
+            font-size: 12px;
+            color: rgba(20,33,61,.62);
+        }
+        #pos-view > h2::after {
+            content: 'Pilih favoritmu, lalu cek keranjang 🍗';
+            display: block;
+            margin-top: 5px;
+            color: var(--navy);
+            font-size: 16px;
+            text-transform: none;
+            letter-spacing: -.02em;
+        }
+        #menu-grid { gap: 12px; }
+        #menu-grid > button {
+            height: 144px;
+            padding: 16px;
+            border: 0;
+            box-shadow: 0 10px 25px rgba(20,33,61,.08);
+            background: linear-gradient(145deg, #fff 0%, #fff 70%, #fff7e8 100%);
+        }
+        #menu-grid > button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #FCA311, #ffd27c);
+        }
+        #menu-grid > button:active { transform: scale(.96); box-shadow: 0 5px 12px rgba(20,33,61,.08); }
+        #menu-grid > button svg { width: 62px; height: 62px; color: rgba(252,163,17,.20); right: -5px; bottom: -4px; }
+        #menu-grid > button span:first-child { font-size: 15px; max-width: 82%; }
+        #cart-summary {
+            margin: 0 12px 12px;
+            left: 0; right: 0;
+            border: 0;
+            border-radius: 22px;
+            background: var(--navy);
+            box-shadow: 0 14px 36px rgba(20,33,61,.30);
+            color: white;
+        }
+        #cart-summary p { color: white; }
+        #cart-summary #cart-total-summary { color: var(--orange); }
+        #cart-summary > svg { color: rgba(255,255,255,.55); }
+        #cart-summary .bg-yellow { box-shadow: 0 8px 18px rgba(252,163,17,.30); }
+        #cart-sheet { background: #f5f6f8; }
+        #cart-sheet > div:first-child { border-radius: 0 0 24px 24px; padding-top: max(16px, env(safe-area-inset-top)); }
+        #cart-sheet > div:last-child { border-radius: 26px 26px 0 0; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+        #cart-items-wrapper > div { border-radius: 18px; padding: 14px; }
+        #admin-nav {
+            padding-bottom: env(safe-area-inset-bottom);
+            border: 0;
+            box-shadow: 0 -8px 28px rgba(20,33,61,.10);
+        }
+        #admin-nav button { position: relative; }
+        #admin-nav button.text-yellow { color: var(--navy); }
+        #admin-nav button.text-yellow::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            width: 30px;
+            height: 3px;
+            border-radius: 999px;
+            background: var(--orange);
+        }
+        [id^="modal-"] > div:not([id="toast-container"]) { border-radius: 26px; }
+        #loading-overlay { backdrop-filter: blur(7px); background: rgba(255,255,255,.88); }
+        #loading-overlay svg { filter: drop-shadow(0 8px 14px rgba(252,163,17,.25)); }
+        @media (min-width: 500px) {
+            #main-app, #login-screen { height: min(900px, calc(100vh - 28px)); border-radius: 30px; overflow: hidden; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+        }
+
     </style>
 </head>
 <body class="text-navy antialiased h-screen overflow-hidden flex flex-col justify-center items-center bg-platinum">
@@ -234,7 +231,7 @@ button{-webkit-user-select:none;user-select:none}
             <!-- Ganti src dengan logo Anda -->
             <img src="Nurhayati-CL.png" alt="Logo Nurhayati" class="w-24 h-24 mx-auto mb-4 rounded-full shadow-md object-cover border-4 border-platinum" id="logo-login" onerror="this.src='https://placehold.co/150x150/14213D/FCA311?text=Logo'">
             <h1 class="text-3xl font-bold text-navy">Nurhayati Chicken</h1>
-            <p class="text-navy/60 mt-2 font-medium">Masuk untuk memulai sesi</p>
+            <p class="text-navy/60 mt-2 font-medium">Kasir cepat, pesanan hangat, pelanggan happy.</p>
         </div>
         <div class="space-y-4">
             <div>
@@ -267,7 +264,7 @@ button{-webkit-user-select:none;user-select:none}
 
         <!-- CONTENT AREA: KASIR -->
         <main class="flex-1 overflow-y-auto hide-scroll p-4 pb-32" id="pos-view">
-            <h2 class="text-sm font-bold text-navy/60 mb-3 uppercase tracking-wider">Daftar Menu</h2>
+            <h2 class="text-sm font-bold text-navy/60 mb-3 uppercase tracking-wider">Menu Hari Ini</h2>
             <div id="menu-grid" class="grid grid-cols-2 gap-3">
                 <!-- Data loaded via API -->
             </div>
@@ -348,12 +345,12 @@ button{-webkit-user-select:none;user-select:none}
 
             <div class="p-4 border-t border-platinum bg-white space-y-3 shadow-[0_-10px_20px_-5px_rgba(20,33,61,0.05)] z-10 rounded-t-3xl">
                 <div class="flex justify-between items-center mb-2 px-2">
-                    <span class="font-bold text-navy/60">TOTAL BELANJA</span>
+                    <span class="font-bold text-navy/60">Total Pembayaran</span>
                     <span class="font-bold text-2xl text-navy" id="cart-total-final">Rp 0</span>
                 </div>
                 <button onclick="processCheckout()" class="w-full bg-yellow text-navy font-bold rounded-xl py-3.5 flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-md">
                     <svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Bayar & Cetak RAWBT
+                    Selesaikan & Cetak Struk
                 </button>
                 <button onclick="clearCart()" class="w-full bg-platinum text-navy/70 font-bold rounded-xl py-3 active:scale-95 transition-transform">
                     Bersihkan Keranjang
