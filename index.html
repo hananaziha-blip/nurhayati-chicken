@@ -25,6 +25,13 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #E5E5E5; -webkit-tap-highlight-color: transparent; }
+        /* Tinggi layar penuh yang benar di HP asli -- 100vh di banyak browser
+           mobile dihitung dengan asumsi address bar tersembunyi, sehingga
+           konten di bagian bawah (mis. bar navigasi admin) bisa kepotong di
+           luar area yang benar-benar terlihat. 100dvh mengikuti tinggi layar
+           yang sedang benar-benar tampak. Baris vh tetap ada sebagai fallback
+           untuk browser lama yang belum kenal dvh. */
+        .app-h { height: 100vh; height: 100dvh; }
         .bento-card { background: #FFFFFF; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(20, 33, 61, 0.05); border: 1px solid #E5E5E5; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
@@ -33,7 +40,7 @@
         @keyframes placeholderShimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
     </style>
 </head>
-<body class="text-navy antialiased h-screen overflow-hidden flex flex-col justify-center items-center bg-platinum">
+<body class="text-navy antialiased app-h overflow-hidden flex flex-col justify-center items-center bg-platinum">
 
     <!-- TOAST CONTAINER (z-[2000]) -->
     <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[2000] flex flex-col gap-2 w-11/12 max-w-md pointer-events-none"></div>
@@ -476,6 +483,7 @@
                 saveCache({ menus: mainMenu, users: mainUsers, reports: mainReports });
 
                 if (currentUser) { // kalau sudah login, refresh tampilan yang sedang aktif
+                    applyRoleUI();
                     renderMenu();
                     renderAdminMenu();
                     renderAdminReport();
@@ -520,6 +528,28 @@
             trySyncQueue();
         };
 
+        // Terapkan tampilan sesuai role (tampilkan/sembunyikan bar navigasi
+        // admin, dsb). Dipisah jadi fungsi sendiri supaya bisa dipanggil ulang
+        // kapan pun -- bukan cuma sesaat setelah login -- biar tidak ada celah
+        // kalau ada refresh data di belakang layar.
+        const applyRoleUI = () => {
+            if (!currentUser) return;
+            document.getElementById('role-badge').innerText = `${currentUser.role} - ${currentUser.name}`;
+            if (currentUser.role === 'Admin') {
+                document.getElementById('admin-nav').classList.remove('hidden');
+                document.getElementById('pos-view').classList.remove('pb-32');
+                document.getElementById('pos-view').classList.add('pb-20');
+                document.getElementById('cart-summary').classList.remove('bottom-0');
+                document.getElementById('cart-summary').classList.add('bottom-[68px]');
+            } else {
+                document.getElementById('admin-nav').classList.add('hidden');
+                document.getElementById('pos-view').classList.add('pb-32');
+                document.getElementById('pos-view').classList.remove('pb-20');
+                document.getElementById('cart-summary').classList.add('bottom-0');
+                document.getElementById('cart-summary').classList.remove('bottom-[68px]');
+            }
+        };
+
         const handleLogin = () => {
             if (GAS_URL === "URL_GAS_ANDA_DISINI") {
                 showToast("Hubungkan ke Google Script terlebih dahulu", "error");
@@ -537,21 +567,7 @@
                 currentUser = user;
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
-                document.getElementById('role-badge').innerText = `${currentUser.role} - ${currentUser.name}`;
-                
-                if(currentUser.role === 'Admin') {
-                    document.getElementById('admin-nav').classList.remove('hidden');
-                    document.getElementById('pos-view').classList.remove('pb-32');
-                    document.getElementById('pos-view').classList.add('pb-20');
-                    document.getElementById('cart-summary').classList.remove('bottom-0');
-                    document.getElementById('cart-summary').classList.add('bottom-[68px]');
-                } else {
-                    document.getElementById('admin-nav').classList.add('hidden');
-                    document.getElementById('pos-view').classList.add('pb-32');
-                    document.getElementById('pos-view').classList.remove('pb-20');
-                    document.getElementById('cart-summary').classList.add('bottom-0');
-                    document.getElementById('cart-summary').classList.remove('bottom-[68px]');
-                }
+                applyRoleUI();
                 
                 renderMenu();
                 renderAdminMenu();
@@ -1114,7 +1130,7 @@
                     if(idx !== -1) mainUsers[idx] = payload;
                     if(currentUser.id == id) {
                         currentUser = payload;
-                        document.getElementById('role-badge').innerText = `${currentUser.role} - ${currentUser.name}`;
+                        applyRoleUI();
                     }
                 }
                 closeUserForm();
