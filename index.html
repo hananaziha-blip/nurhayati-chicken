@@ -28,184 +28,7 @@
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         .icon-svg { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
         .shimmer { background: #f6f7f8; background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%); background-repeat: no-repeat; background-size: 1000px 100%; animation-duration: 1.5s; animation-fill-mode: forwards; animation-iteration-count: infinite; animation-name: placeholderShimmer; animation-timing-function: linear; }
-
         @keyframes placeholderShimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
-
-        :root {
-            --navy: #14213D;
-            --orange: #FCA311;
-            --platinum: #E5E5E5;
-            --white: #FFFFFF;
-            --muted: #667085;
-            --danger: #EF4444;
-            --shadow-soft: 0 12px 34px rgba(20,33,61,.10);
-            --shadow-float: 0 18px 42px rgba(20,33,61,.18);
-        }
-        * { box-sizing: border-box; }
-        html, body { overscroll-behavior: none; }
-        body {
-            background:
-                radial-gradient(circle at 10% 0%, rgba(252,163,17,.18), transparent 28%),
-                linear-gradient(160deg, #f8f9fb 0%, #E5E5E5 100%);
-            color: var(--navy);
-        }
-        button, input, select { min-height: 44px; }
-        button { touch-action: manipulation; }
-        button:focus-visible, input:focus-visible, select:focus-visible {
-            outline: 3px solid rgba(252,163,17,.38);
-            outline-offset: 2px;
-        }
-        .bento-card {
-            border: 1px solid rgba(20,33,61,.07);
-            border-radius: 22px;
-            box-shadow: 0 8px 24px rgba(20,33,61,.07);
-        }
-        #login-screen {
-            overflow: hidden;
-            justify-content: flex-start;
-            padding: 0;
-            background: var(--white);
-        }
-        #login-screen::before {
-            content: '';
-            position: absolute;
-            inset: 0 0 auto;
-            height: 43%;
-            background:
-                radial-gradient(circle at 84% 18%, rgba(255,255,255,.18) 0 8%, transparent 8.5%),
-                radial-gradient(circle at 12% 74%, rgba(252,163,17,.24) 0 14%, transparent 14.5%),
-                linear-gradient(145deg, #14213D 0%, #1d315d 100%);
-            border-radius: 0 0 38px 38px;
-        }
-        #login-screen > .text-center {
-            position: relative;
-            z-index: 1;
-            width: calc(100% - 40px);
-            margin: 38px 20px 24px;
-            padding: 22px 18px 28px;
-            color: white;
-        }
-        #logo-login {
-            width: 104px; height: 104px;
-            border: 6px solid rgba(255,255,255,.95);
-            box-shadow: 0 14px 34px rgba(0,0,0,.22);
-        }
-        #login-screen h1 { color: white; letter-spacing: -.04em; }
-        #login-screen .text-center p { color: rgba(255,255,255,.70); }
-        #login-screen > .space-y-4 {
-            position: relative;
-            z-index: 2;
-            margin: -2px 20px 20px;
-            padding: 22px;
-            border-radius: 26px;
-            background: white;
-            box-shadow: var(--shadow-float);
-            border: 1px solid rgba(20,33,61,.06);
-        }
-        #pin-input {
-            height: 58px;
-            border: 2px solid #E5E5E5;
-            background: #f8f9fb;
-            letter-spacing: .45em;
-        }
-        #login-screen button[onclick="handleLogin()"] {
-            height: 56px;
-            border-radius: 18px;
-            box-shadow: 0 10px 24px rgba(252,163,17,.28);
-        }
-        #login-screen button[onclick="handleLogin()"]::after { content: '  →'; }
-        #main-app { background: #f3f4f6; }
-        #main-app > header {
-            padding: max(12px, env(safe-area-inset-top)) 16px 12px;
-            border: 0;
-            background: linear-gradient(140deg, #14213D 0%, #1b2c52 100%);
-            color: white;
-            box-shadow: 0 8px 28px rgba(20,33,61,.18);
-        }
-        #main-app > header h1 { color: white; }
-        #main-app > header button { color: rgba(255,255,255,.72); }
-        #logo-header { border-color: rgba(255,255,255,.8); width: 44px; height: 44px; }
-        #role-badge { background: var(--orange); color: var(--navy); }
-        #pos-view, #admin-menu-view, #admin-report-view, #admin-user-view {
-            background:
-                radial-gradient(circle at 100% 0%, rgba(252,163,17,.11), transparent 26%),
-                #f5f6f8;
-        }
-        #pos-view > h2 {
-            margin: 4px 0 14px;
-            font-size: 12px;
-            color: rgba(20,33,61,.62);
-        }
-        #pos-view > h2::after {
-            content: 'Pilih favoritmu, lalu cek keranjang 🍗';
-            display: block;
-            margin-top: 5px;
-            color: var(--navy);
-            font-size: 16px;
-            text-transform: none;
-            letter-spacing: -.02em;
-        }
-        #menu-grid { gap: 12px; }
-        #menu-grid > button {
-            height: 144px;
-            padding: 16px;
-            border: 0;
-            box-shadow: 0 10px 25px rgba(20,33,61,.08);
-            background: linear-gradient(145deg, #fff 0%, #fff 70%, #fff7e8 100%);
-        }
-        #menu-grid > button::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #FCA311, #ffd27c);
-        }
-        #menu-grid > button:active { transform: scale(.96); box-shadow: 0 5px 12px rgba(20,33,61,.08); }
-        #menu-grid > button svg { width: 62px; height: 62px; color: rgba(252,163,17,.20); right: -5px; bottom: -4px; }
-        #menu-grid > button span:first-child { font-size: 15px; max-width: 82%; }
-        #cart-summary {
-            margin: 0 12px 12px;
-            left: 0; right: 0;
-            border: 0;
-            border-radius: 22px;
-            background: var(--navy);
-            box-shadow: 0 14px 36px rgba(20,33,61,.30);
-            color: white;
-        }
-        #cart-summary p { color: white; }
-        #cart-summary #cart-total-summary { color: var(--orange); }
-        #cart-summary > svg { color: rgba(255,255,255,.55); }
-        #cart-summary .bg-yellow { box-shadow: 0 8px 18px rgba(252,163,17,.30); }
-        #cart-sheet { background: #f5f6f8; }
-        #cart-sheet > div:first-child { border-radius: 0 0 24px 24px; padding-top: max(16px, env(safe-area-inset-top)); }
-        #cart-sheet > div:last-child { border-radius: 26px 26px 0 0; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
-        #cart-items-wrapper > div { border-radius: 18px; padding: 14px; }
-        #admin-nav {
-            padding-bottom: env(safe-area-inset-bottom);
-            border: 0;
-            box-shadow: 0 -8px 28px rgba(20,33,61,.10);
-        }
-        #admin-nav button { position: relative; }
-        #admin-nav button.text-yellow { color: var(--navy); }
-        #admin-nav button.text-yellow::before {
-            content: '';
-            position: absolute;
-            top: 5px;
-            width: 30px;
-            height: 3px;
-            border-radius: 999px;
-            background: var(--orange);
-        }
-        [id^="modal-"] > div:not([id="toast-container"]) { border-radius: 26px; }
-        #loading-overlay { backdrop-filter: blur(7px); background: rgba(255,255,255,.88); }
-        #loading-overlay svg { filter: drop-shadow(0 8px 14px rgba(252,163,17,.25)); }
-        @media (min-width: 500px) {
-            #main-app, #login-screen { height: min(900px, calc(100vh - 28px)); border-radius: 30px; overflow: hidden; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
-        }
-
     </style>
 </head>
 <body class="text-navy antialiased h-screen overflow-hidden flex flex-col justify-center items-center bg-platinum">
@@ -231,7 +54,7 @@
             <!-- Ganti src dengan logo Anda -->
             <img src="Nurhayati-CL.png" alt="Logo Nurhayati" class="w-24 h-24 mx-auto mb-4 rounded-full shadow-md object-cover border-4 border-platinum" id="logo-login" onerror="this.src='https://placehold.co/150x150/14213D/FCA311?text=Logo'">
             <h1 class="text-3xl font-bold text-navy">Nurhayati Chicken</h1>
-            <p class="text-navy/60 mt-2 font-medium">Kasir cepat, pesanan hangat, pelanggan happy.</p>
+            <p class="text-navy/60 mt-2 font-medium">Masuk untuk memulai sesi</p>
         </div>
         <div class="space-y-4">
             <div>
@@ -254,7 +77,10 @@
                 <img src="Nurhayati-CL.png" alt="Logo" class="w-10 h-10 rounded-full object-cover shadow-sm border-2 border-platinum" id="logo-header" onerror="this.src='https://placehold.co/100x100/14213D/FCA311?text=Logo'">
                 <div>
                     <h1 class="font-bold text-lg text-navy leading-tight">Nurhayati Chicken</h1>
-                    <span id="role-badge" class="text-[10px] px-2 py-0.5 rounded-md bg-navy text-yellow font-bold uppercase tracking-wider">Kasir</span>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                        <span id="role-badge" class="text-[10px] px-2 py-0.5 rounded-md bg-navy text-yellow font-bold uppercase tracking-wider">Kasir</span>
+                        <span id="sync-badge" onclick="manualSync()" title="Ketuk untuk sync sekarang" class="hidden text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider cursor-pointer active:scale-95 transition-transform"></span>
+                    </div>
                 </div>
             </div>
             <button onclick="handleLogout()" class="p-2 text-navy/60 rounded-full hover:bg-platinum active:scale-95 transition-colors">
@@ -264,7 +90,7 @@
 
         <!-- CONTENT AREA: KASIR -->
         <main class="flex-1 overflow-y-auto hide-scroll p-4 pb-32" id="pos-view">
-            <h2 class="text-sm font-bold text-navy/60 mb-3 uppercase tracking-wider">Menu Hari Ini</h2>
+            <h2 class="text-sm font-bold text-navy/60 mb-3 uppercase tracking-wider">Daftar Menu</h2>
             <div id="menu-grid" class="grid grid-cols-2 gap-3">
                 <!-- Data loaded via API -->
             </div>
@@ -345,12 +171,12 @@
 
             <div class="p-4 border-t border-platinum bg-white space-y-3 shadow-[0_-10px_20px_-5px_rgba(20,33,61,0.05)] z-10 rounded-t-3xl">
                 <div class="flex justify-between items-center mb-2 px-2">
-                    <span class="font-bold text-navy/60">Total Pembayaran</span>
+                    <span class="font-bold text-navy/60">TOTAL BELANJA</span>
                     <span class="font-bold text-2xl text-navy" id="cart-total-final">Rp 0</span>
                 </div>
                 <button onclick="processCheckout()" class="w-full bg-yellow text-navy font-bold rounded-xl py-3.5 flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-md">
                     <svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Selesaikan & Cetak Struk
+                    Bayar & Cetak RAWBT
                 </button>
                 <button onclick="clearCart()" class="w-full bg-platinum text-navy/70 font-bold rounded-xl py-3 active:scale-95 transition-transform">
                     Bersihkan Keranjang
@@ -486,6 +312,92 @@
         let currentReportDate = new Date();
         let appReady = false;
 
+        // === CACHE & ANTRIAN OFFLINE ===
+        const CACHE_KEY = 'nhc_cache_v1';
+        const QUEUE_KEY = 'nhc_queue_v1';
+        let pendingQueue = [];
+        let isSyncing = false;
+
+        const loadCache = () => {
+            try {
+                const raw = localStorage.getItem(CACHE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        };
+        const saveCache = (data) => {
+            try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); }
+            catch (e) { console.warn('Gagal menyimpan cache', e); }
+        };
+        const loadQueue = () => {
+            try {
+                const raw = localStorage.getItem(QUEUE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) { return []; }
+        };
+        const saveQueue = () => {
+            try { localStorage.setItem(QUEUE_KEY, JSON.stringify(pendingQueue)); }
+            catch (e) { console.warn('Gagal menyimpan antrian', e); }
+            updateSyncBadge();
+        };
+
+        const updateSyncBadge = () => {
+            const badge = document.getElementById('sync-badge');
+            if (!badge) return;
+            const online = navigator.onLine;
+            const base = 'text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider cursor-pointer active:scale-95 transition-transform';
+            if (!online) {
+                badge.innerText = pendingQueue.length > 0 ? `Offline • ${pendingQueue.length} tertunda` : 'Offline';
+                badge.className = base + ' bg-red-500 text-white';
+            } else if (pendingQueue.length > 0) {
+                badge.innerText = `${pendingQueue.length} belum sync`;
+                badge.className = base + ' bg-yellow text-navy';
+            } else {
+                badge.className = base + ' hidden';
+                return;
+            }
+            badge.classList.remove('hidden');
+        };
+
+        // Gabungkan satu transaksi ke rekap laporan lokal (dipakai baik saat
+        // checkout instan, maupun saat mencocokkan antrian yang belum tersinkron
+        // setelah data laporan terbaru ditarik ulang dari server).
+        const mergeTrxIntoReports = (trx) => {
+            let rep = mainReports.find(r => r.date === trx.date);
+            if (rep) { rep.trx += 1; rep.omset += trx.total; }
+            else { mainReports.push({ date: trx.date, trx: 1, omset: trx.total }); }
+        };
+        const reapplyPendingToReports = () => {
+            pendingQueue.forEach(trx => mergeTrxIntoReports(trx));
+        };
+
+        // Coba kirim antrian transaksi yang belum tersinkron ke server, satu
+        // request untuk semuanya (lihat action 'syncBatch' di backend). Aman
+        // dipanggil berkali-kali dan kapan saja -- akan diam saja kalau memang
+        // belum ada yang perlu disinkronkan atau sedang offline.
+        const trySyncQueue = async () => {
+            if (isSyncing || pendingQueue.length === 0) return;
+            if (navigator.onLine === false) return;
+
+            isSyncing = true;
+            const batch = pendingQueue.slice(0, 100); // batasi per batch, sisanya menyusul di percobaan berikutnya
+            const result = await fetchAPI('syncBatch', { transactions: batch }, 1, true);
+            isSyncing = false;
+
+            if (result && Array.isArray(result.syncedIds)) {
+                const syncedSet = new Set(result.syncedIds);
+                pendingQueue = pendingQueue.filter(t => !syncedSet.has(t.id));
+                saveQueue();
+            }
+        };
+
+        const manualSync = async () => {
+            if (pendingQueue.length === 0) { showToast('Semua transaksi sudah tersinkron'); return; }
+            if (navigator.onLine === false) { showToast('Sedang offline, coba lagi kalau sinyal sudah kembali', 'error'); return; }
+            showToast('Menyinkronkan transaksi...');
+            await trySyncQueue();
+            showToast(pendingQueue.length === 0 ? 'Sinkronisasi berhasil' : `${pendingQueue.length} transaksi masih tertunda`, pendingQueue.length === 0 ? 'success' : 'error');
+        };
+
         const formatRp = (num) => 'Rp ' + parseInt(num).toLocaleString('id-ID');
         
         const showToast = (message, type = 'success') => {
@@ -502,10 +414,10 @@
             }, 3000);
         };
 
-        async function fetchAPI(action, payload = null, retryCount = 1) {
+        async function fetchAPI(action, payload = null, retryCount = 1, silent = false) {
             if (GAS_URL === "URL_GAS_ANDA_DISINI" || GAS_URL.trim() === "") return null;
             
-            document.getElementById('loading-overlay').classList.remove('hidden');
+            if (!silent) document.getElementById('loading-overlay').classList.remove('hidden');
             
             try {
                 let params = `?action=${action}`;
@@ -522,7 +434,7 @@
                 const response = await fetch(GAS_URL + params, options);
                 const result = await response.json();
                 
-                document.getElementById('loading-overlay').classList.add('hidden');
+                if (!silent) document.getElementById('loading-overlay').classList.add('hidden');
                 
                 if (result.status === 'success') {
                     return result.data;
@@ -532,29 +444,72 @@
             } catch (error) {
                 if (retryCount > 0) {
                     console.warn(`Mencoba ulang koneksi... (${retryCount}x)`);
-                    return fetchAPI(action, payload, retryCount - 1);
+                    return fetchAPI(action, payload, retryCount - 1, silent);
                 } else {
-                    document.getElementById('loading-overlay').classList.add('hidden');
-                    showToast(error.message || "Gagal menghubungi server database", "error");
+                    if (!silent) {
+                        document.getElementById('loading-overlay').classList.add('hidden');
+                        showToast(error.message || "Gagal menghubungi server database", "error");
+                    }
                     return null;
                 }
             }
         }
 
+        // Tarik data terbaru dari server. `blocking = true` dipakai kalau belum
+        // ada cache sama sekali (harus tunggu, tidak ada data lain untuk ditampilkan).
+        // Kalau cache sudah ada, ini jalan diam-diam di belakang layar.
+        const refreshFromServer = async (blocking) => {
+            const initialData = await fetchAPI('getInitialData', null, 2, !blocking);
+            if (initialData) {
+                mainMenu = initialData.menus || [];
+                mainUsers = initialData.users || [];
+                mainReports = initialData.reports || [];
+                appReady = true;
+                reapplyPendingToReports(); // transaksi yang masih tertunda tetap kehitung di laporan
+                saveCache({ menus: mainMenu, users: mainUsers, reports: mainReports });
+
+                if (currentUser) { // kalau sudah login, refresh tampilan yang sedang aktif
+                    renderMenu();
+                    renderAdminMenu();
+                    renderAdminReport();
+                    renderAdminUsers();
+                }
+                if (blocking) showToast("Sistem siap digunakan");
+            }
+        };
+
         window.onload = async () => {
             if (GAS_URL === "URL_GAS_ANDA_DISINI") {
                 document.getElementById('gas-warning').classList.remove('hidden');
+                return;
+            }
+
+            pendingQueue = loadQueue();
+
+            // 1. Boot instan dari cache lokal kalau ada -- tidak perlu nunggu server
+            const cached = loadCache();
+            if (cached) {
+                mainMenu = cached.menus || [];
+                mainUsers = cached.users || [];
+                mainReports = cached.reports || [];
+                reapplyPendingToReports();
+                appReady = true;
             } else {
                 document.getElementById('loading-msg').innerText = "Memuat Database...";
-                const initialData = await fetchAPI('getInitialData', null, 2);
-                if (initialData) {
-                    mainMenu = initialData.menus || [];
-                    mainUsers = initialData.users || [];
-                    mainReports = initialData.reports || [];
-                    appReady = true;
-                    showToast("Sistem siap digunakan");
-                }
             }
+
+            updateSyncBadge();
+
+            // 2. Pantau status koneksi + antrian belum tersinkron
+            window.addEventListener('online', () => { updateSyncBadge(); trySyncQueue(); });
+            window.addEventListener('offline', updateSyncBadge);
+            setInterval(trySyncQueue, 30000); // jaring pengaman kalau event 'online' tidak sempat kepicu
+
+            // 3. Refresh data terbaru dari server (blocking hanya kalau memang belum ada cache)
+            await refreshFromServer(!cached);
+
+            // 4. Kalau ada sisa antrian dari sesi sebelumnya, coba sinkronkan sekarang
+            trySyncQueue();
         };
 
         const handleLogin = () => {
@@ -739,6 +694,42 @@
             sheet.classList.toggle('translate-y-full');
         };
 
+        // Bangun teks struk dan tembak ke RAWBT. Selalu dipanggil terlepas dari
+        // status jaringan/sync -- RAWBT murni intent ke aplikasi lain di HP,
+        // jadi tidak pernah butuh koneksi ke GAS.
+        const printReceipt = (trx) => {
+            let receiptText = `NURHAYATI CHICKEN\n`;
+            receiptText += `Klumprit, Rt 01 RW 01, Surojoyo,\n`;
+            receiptText += `Candimulyo, Magelang\n`;
+            receiptText += `(Depan lapangan Candimulyo)\n`;
+            receiptText += `================================\n`;
+            trx.items.forEach(item => {
+                receiptText += `${item.name}\n`;
+                receiptText += `${item.qty} x ${item.price} = ${item.qty * item.price}\n`;
+            });
+            receiptText += `================================\n`;
+            receiptText += `TOTAL: ${trx.total}\n`;
+            receiptText += `================================\n`;
+            receiptText += `Kasir: ${trx.kasir}\n`;
+            receiptText += `Terima Kasih\n`;
+
+            const encoded = encodeURI(receiptText);
+            const intentUrl = `intent://${encoded}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+
+            setTimeout(() => {
+                try {
+                    const a = document.createElement('a');
+                    a.href = intentUrl;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } catch (e) {
+                    console.warn("Intent ditolak oleh browser pratinjau.");
+                    showToast("Cetak RAWBT hanya berjalan di Android", "error");
+                }
+            }, 500);
+        };
+
         const processCheckout = async () => {
             if(cart.length === 0) {
                 showToast('Keranjang masih kosong!', 'error');
@@ -757,51 +748,22 @@
                 items: cart
             };
 
-            document.getElementById('loading-msg').innerText = "Menyimpan Transaksi...";
-            const result = await fetchAPI('saveTransaction', transactionData);
-            
-            if(result) {
-                // Update local report data immediately for UI
-                let rep = mainReports.find(r => r.date === dateStr);
-                if(rep) { rep.trx += 1; rep.omset += total; } 
-                else { mainReports.push({ date: dateStr, trx: 1, omset: total }); }
-                renderAdminReport();
+            // 1. Simpan ke antrian lokal DULU -- transaksi tidak akan hilang
+            // walau jaringan mati saat ini juga.
+            pendingQueue.push(transactionData);
+            saveQueue();
+            mergeTrxIntoReports(transactionData);
+            renderAdminReport();
 
-                // Format RAWBT Cetak
-                let receiptText = `NURHAYATI CHICKEN\n`;
-                receiptText += `Klumprit, Rt 01 RW 01, Surojoyo,\n`;
-                receiptText += `Candimulyo, Magelang\n`;
-                receiptText += `(Depan lapangan Candimulyo)\n`;
-                receiptText += `================================\n`;
-                cart.forEach(item => {
-                    receiptText += `${item.name}\n`;
-                    receiptText += `${item.qty} x ${item.price} = ${item.qty * item.price}\n`;
-                });
-                receiptText += `================================\n`;
-                receiptText += `TOTAL: ${total}\n`;
-                receiptText += `================================\n`;
-                receiptText += `Kasir: ${transactionData.kasir}\n`;
-                receiptText += `Terima Kasih\n`;
+            showToast('Transaksi tersimpan! Mencetak...');
+            clearCart();
 
-                const encoded = encodeURI(receiptText);
-                const intentUrl = `intent://${encoded}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+            // 2. Cetak struk -- selalu jalan, tidak menunggu atau bergantung status server.
+            printReceipt(transactionData);
 
-                showToast('Transaksi Berhasil! Mencetak...');
-                clearCart();
-                
-                setTimeout(() => {
-                    try {
-                        const a = document.createElement('a');
-                        a.href = intentUrl;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                    } catch (e) {
-                        console.warn("Intent ditolak oleh browser pratinjau.");
-                        showToast("Cetak RAWBT hanya berjalan di Android", "error");
-                    }
-                }, 500);
-            }
+            // 3. Coba sinkronkan ke server di belakang layar (best-effort, tidak
+            // memblokir apa pun; kalau gagal/offline akan otomatis dicoba lagi).
+            trySyncQueue();
         };
 
         const renderAdminMenu = () => {
