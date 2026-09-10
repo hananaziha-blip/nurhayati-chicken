@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nurhayati Chicken POS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#14213D',
+                        yellow: '#FCA311',
+                        platinum: '#E5E5E5',
+                        white: '#FFFFFF'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #E5E5E5; -webkit-tap-highlight-color: transparent; }
+        .bento-card { background: #FFFFFF; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(20, 33, 61, 0.05); border: 1px solid #E5E5E5; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .icon-svg { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .shimmer { background: #f6f7f8; background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%); background-repeat: no-repeat; background-size: 1000px 100%; animation-duration: 1.5s; animation-fill-mode: forwards; animation-iteration-count: infinite; animation-name: placeholderShimmer; animation-timing-function: linear; }
+        @keyframes placeholderShimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
+    </style>
+</head>
+<body class="text-navy antialiased h-screen overflow-hidden flex flex-col justify-center items-center bg-platinum">
+
+    <!-- TOAST CONTAINER (z-[2000]) -->
+    <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[2000] flex flex-col gap-2 w-11/12 max-w-md pointer-events-none"></div>
+
+    <!-- LOADING OVERLAY (z-[9999]) -->
+    <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-90 z-[9999] flex flex-col items-center justify-center hidden">
+        <svg class="animate-spin h-10 w-10 text-yellow mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="font-bold text-navy" id="loading-msg">Memproses...</span>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="w-full max-w-md bg-white h-full flex flex-col justify-center p-6 relative z-50">
+        <div id="gas-warning" class="hidden mb-6 bg-red-100 text-red-700 p-3 rounded-xl border border-red-200 text-sm font-bold text-center">
+            URL Google Apps Script belum diisi! Silakan edit index.html
+        </div>
+        <div class="text-center mb-8">
+            <!-- Ganti src dengan logo Anda -->
+            <img src="https://placehold.co/150x150/14213D/FCA311?text=Logo+Sini" alt="Logo Nurhayati" class="w-24 h-24 mx-auto mb-4 rounded-full shadow-md object-cover border-4 border-platinum" id="logo-login" onerror="this.src='https://placehold.co/150x150/14213D/FCA311?text=Logo'">
+            <h1 class="text-3xl font-bold text-navy">Nurhayati Chicken</h1>
+            <p class="text-navy/60 mt-2 font-medium">Masuk untuk memulai sesi</p>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-bold text-navy mb-1">PIN Akses</label>
+                <input type="password" id="pin-input" class="w-full border border-platinum rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow text-center text-2xl tracking-widest bg-platinum/30 text-navy" placeholder="••••" autocomplete="off" onkeydown="if(event.key === 'Enter') handleLogin()">
+            </div>
+            <button onclick="handleLogin()" class="w-full bg-yellow text-navy font-bold rounded-xl py-3 shadow-md active:scale-95 transition-transform">
+                Masuk
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div id="main-app" class="w-full max-w-md bg-platinum h-full flex flex-col relative hidden shadow-2xl">
+        
+        <!-- HEADER -->
+        <header class="bg-white px-4 py-3 border-b border-platinum flex justify-between items-center shrink-0 z-40">
+            <div class="flex items-center gap-3">
+                <!-- Ganti src dengan logo Anda -->
+                <img src="https://placehold.co/100x100/14213D/FCA311?text=Logo" alt="Logo" class="w-10 h-10 rounded-full object-cover shadow-sm border-2 border-platinum" id="logo-header" onerror="this.src='https://placehold.co/100x100/14213D/FCA311?text=Logo'">
+                <div>
+                    <h1 class="font-bold text-lg text-navy leading-tight">Nurhayati Chicken</h1>
+                    <span id="role-badge" class="text-[10px] px-2 py-0.5 rounded-md bg-navy text-yellow font-bold uppercase tracking-wider">Kasir</span>
+                </div>
+            </div>
+            <button onclick="handleLogout()" class="p-2 text-navy/60 rounded-full hover:bg-platinum active:scale-95 transition-colors">
+                <svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </button>
+        </header>
+
+        <!-- CONTENT AREA: KASIR -->
+        <main class="flex-1 overflow-y-auto hide-scroll p-4 pb-32" id="pos-view">
+            <h2 class="text-sm font-bold text-navy/60 mb-3 uppercase tracking-wider">Daftar Menu</h2>
+            <div id="menu-grid" class="grid grid-cols-2 gap-3">
+                <!-- Data loaded via API -->
+            </div>
+        </main>
+
+        <!-- CONTENT AREA: ADMIN MENU MANAGEMENT -->
+        <main class="flex-1 overflow-y-auto hide-scroll p-4 pb-20 hidden" id="admin-menu-view">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-navy">Manajemen Menu</h2>
+                <button onclick="openMenuForm()" class="bg-navy text-yellow text-sm font-bold px-3 py-1.5 rounded-lg active:scale-95 shadow-sm">+ Tambah</button>
+            </div>
+            <div class="space-y-3" id="admin-menu-list">
+                <!-- Data loaded via API -->
+            </div>
+        </main>
+
+        <!-- CONTENT AREA: ADMIN LAPORAN -->
+        <main class="flex-1 overflow-y-auto hide-scroll p-4 pb-20 hidden" id="admin-report-view">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="changeReportMonth(-1)" class="p-2 bg-white rounded-lg shadow-sm text-navy active:scale-95 border border-platinum hover:border-yellow transition-colors"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg></button>
+                <h2 class="text-lg font-bold text-navy" id="report-month-label">Bulan Ini</h2>
+                <button onclick="changeReportMonth(1)" class="p-2 bg-white rounded-lg shadow-sm text-navy active:scale-95 border border-platinum hover:border-yellow transition-colors"><svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></button>
+            </div>
+            <div class="bento-card p-4 flex justify-between items-center bg-navy text-white mb-6 border-none shadow-lg">
+                <div>
+                    <p class="text-sm opacity-80 text-platinum font-medium">Total Omset</p>
+                    <p class="text-2xl font-bold text-yellow" id="total-omset-month">Rp 0</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm opacity-80 text-platinum font-medium">Transaksi</p>
+                    <p class="text-xl font-bold text-white" id="total-trx-month">0</p>
+                </div>
+            </div>
+            <div class="space-y-3" id="report-date-list">
+                <!-- Data loaded via API -->
+            </div>
+        </main>
+
+        <!-- CONTENT AREA: ADMIN PENGGUNA -->
+        <main class="flex-1 overflow-y-auto hide-scroll p-4 pb-20 hidden" id="admin-user-view">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-navy">Manajemen Staf</h2>
+                <button onclick="openUserForm()" class="bg-navy text-yellow text-sm font-bold px-3 py-1.5 rounded-lg active:scale-95 shadow-sm">+ Tambah</button>
+            </div>
+            <div class="space-y-3" id="admin-user-list">
+                <!-- Data loaded via API -->
+            </div>
+        </main>
+
+        <!-- BOTTOM CART TOGGLE (z-40) -->
+        <div id="cart-summary" class="absolute bottom-0 left-0 right-0 bg-white border-t border-platinum rounded-t-3xl shadow-[0_-10px_20px_-5px_rgba(20,33,61,0.1)] p-4 z-40 transition-transform cursor-pointer flex justify-between items-center" onclick="toggleCartSheet()">
+            <div class="flex items-center gap-3">
+                <div class="relative bg-yellow p-2 rounded-xl text-navy shadow-sm">
+                    <svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                </div>
+                <div>
+                    <p class="text-xs text-navy/60 font-bold uppercase tracking-wider">Total Pesanan</p>
+                    <p class="text-lg font-bold text-navy" id="cart-total-summary">Rp 0</p>
+                </div>
+            </div>
+            <svg class="w-6 h-6 text-navy/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-7 7 7"></path></svg>
+        </div>
+
+        <!-- FULL CART SHEET MODAL (z-[1000]) -->
+        <div id="cart-sheet" class="absolute inset-0 bg-platinum z-[1000] flex flex-col transform translate-y-full transition-transform duration-300">
+            <div class="px-4 py-4 border-b border-platinum flex justify-between items-center bg-white shadow-sm z-10">
+                <h2 class="font-bold text-lg text-navy">Rincian Pesanan</h2>
+                <button onclick="toggleCartSheet()" class="p-2 bg-platinum rounded-full text-navy/60 active:scale-95 transition-colors">
+                    <svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4 hide-scroll relative bg-platinum">
+                <div id="cart-items-wrapper" class="space-y-3"></div>
+                <div class="text-center text-navy/40 mt-10 text-sm font-bold" id="empty-cart-msg">Keranjang masih kosong</div>
+            </div>
+
+            <div class="p-4 border-t border-platinum bg-white space-y-3 shadow-[0_-10px_20px_-5px_rgba(20,33,61,0.05)] z-10 rounded-t-3xl">
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <span class="font-bold text-navy/60">TOTAL BELANJA</span>
+                    <span class="font-bold text-2xl text-navy" id="cart-total-final">Rp 0</span>
+                </div>
+                <button onclick="processCheckout()" class="w-full bg-yellow text-navy font-bold rounded-xl py-3.5 flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-md">
+                    <svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Bayar & Cetak RAWBT
+                </button>
+                <button onclick="clearCart()" class="w-full bg-platinum text-navy/70 font-bold rounded-xl py-3 active:scale-95 transition-transform">
+                    Bersihkan Keranjang
+                </button>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAV (ADMIN ONLY) -->
+        <nav id="admin-nav" class="bg-white border-t border-platinum shrink-0 flex hidden z-30 shadow-[0_-2px_10px_rgba(20,33,61,0.02)]">
+            <button onclick="switchView('pos')" class="flex-1 py-3 flex flex-col items-center gap-1 text-yellow transition-colors" id="nav-pos">
+                <svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="text-[10px] font-bold">Kasir</span>
+            </button>
+            <button onclick="switchView('menu')" class="flex-1 py-3 flex flex-col items-center gap-1 text-navy/40 transition-colors" id="nav-menu">
+                <svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                <span class="text-[10px] font-bold">Menu</span>
+            </button>
+            <button onclick="switchView('user')" class="flex-1 py-3 flex flex-col items-center gap-1 text-navy/40 transition-colors" id="nav-user">
+                <svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <span class="text-[10px] font-bold">Tim</span>
+            </button>
+            <button onclick="switchView('report')" class="flex-1 py-3 flex flex-col items-center gap-1 text-navy/40 transition-colors" id="nav-report">
+                <svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span class="text-[10px] font-bold">Laporan</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- MODAL DAGING VARIANT (z-[1000]) -->
+    <div id="modal-variant" class="fixed inset-0 bg-navy bg-opacity-70 z-[1000] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform shadow-2xl" id="modal-variant-content">
+            <div class="p-4 border-b border-platinum bg-white flex justify-between items-center">
+                <h3 class="font-bold text-lg text-navy">Pilih Ukuran Daging</h3>
+                <button onclick="closeVariantModal()" class="text-navy/40 hover:text-navy bg-platinum rounded-full p-1 transition-colors">
+                    <svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-3 bg-platinum/30">
+                <button onclick="addVariantToCart('Daging Standar', 7000)" class="w-full bento-card p-4 flex justify-between items-center active:scale-95 transition-all border-platinum hover:border-yellow">
+                    <span class="font-bold text-navy">Standar</span>
+                    <span class="bg-yellow text-navy px-2 py-1 rounded-md font-bold text-sm shadow-sm">Rp 7.000</span>
+                </button>
+                <button onclick="addVariantToCart('Daging Besar', 8000)" class="w-full bento-card p-4 flex justify-between items-center active:scale-95 transition-all border-platinum hover:border-yellow">
+                    <span class="font-bold text-navy">Besar</span>
+                    <span class="bg-yellow text-navy px-2 py-1 rounded-md font-bold text-sm shadow-sm">Rp 8.000</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADD/EDIT MENU ADMIN -->
+    <div id="modal-menu-form" class="fixed inset-0 bg-navy bg-opacity-70 z-[1000] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform shadow-2xl" id="modal-menu-form-content">
+            <div class="p-4 border-b border-platinum bg-white flex justify-between items-center">
+                <h3 class="font-bold text-lg text-navy" id="menu-form-title">Tambah Menu</h3>
+                <button onclick="closeMenuForm()" class="text-navy/40 hover:text-navy bg-platinum rounded-full p-1 transition-colors">
+                    <svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-4 bg-platinum/30">
+                <input type="hidden" id="form-menu-id">
+                <div>
+                    <label class="block text-xs font-bold text-navy mb-1">Nama Menu</label>
+                    <input type="text" id="form-menu-name" class="w-full border border-platinum rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow bg-white text-navy font-medium">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-navy mb-1">Harga (Rp)</label>
+                    <input type="number" id="form-menu-price" class="w-full border border-platinum rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow bg-white text-navy font-medium">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-navy mb-1">Kategori Icon & Tipe</label>
+                    <select id="form-menu-icon" class="w-full border border-platinum rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow bg-white text-navy font-medium">
+                        <option value="chicken_normal">Ayam (Normal)</option>
+                        <option value="chicken_popup">Ayam (Popup Varian Harga)</option>
+                        <option value="snack_normal">Nasi / Snack / Ekstra (Normal)</option>
+                        <option value="drink_normal">Minuman (Normal)</option>
+                    </select>
+                </div>
+                <button onclick="saveMenu()" class="w-full bg-navy text-yellow font-bold rounded-xl py-3 mt-2 active:scale-95 shadow-md">Simpan Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADD/EDIT USER ADMIN -->
+    <div id="modal-user-form" class="fixed inset-0 bg-navy bg-opacity-70 z-[1000] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform shadow-2xl" id="modal-user-form-content">
+            <div class="p-4 border-b border-platinum bg-white flex justify-between items-center">
+                <h3 class="font-bold text-lg text-navy" id="user-form-title">Tambah Staf</h3>
+                <button onclick="closeUserForm()" class="text-navy/40 hover:text-navy bg-platinum rounded-full p-1 transition-colors">
+                    <svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-4 bg-platinum/30">
+                <input type="hidden" id="form-user-id">
+                <div>
+                    <label class="block text-xs font-bold text-navy mb-1">Nama Staf</label>
+                    <input type="text" id="form-user-name" class="w-full border border-platinum rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow bg-white text-navy font-medium" placeholder="Cth: Siti">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-navy mb-1">PIN Akses (4 Digit)</label>
+                    <input type="password" id="form-user-pin" class="w-full border border-platinum rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow bg-white text-navy font-medium" placeholder="Cth: 1234">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-navy mb-1">Jabatan</label>
+                    <select id="form-user-role" class="w-full border border-platinum rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow bg-white text-navy font-medium">
+                        <option value="Kasir">Kasir</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <button onclick="saveUser()" class="w-full bg-navy text-yellow font-bold rounded-xl py-3 mt-2 active:scale-95 shadow-md">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === KONFIGURASI WAJIB ===
+        // PASTE URL GOOGLE APPS SCRIPT WEB APP DI BAWAH INI SETELAH DEPLOY
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzul8pdMpiTznrGJqbDDt72EWTUKVAo609v5roK8v5pe_yrny8lfRMAH8-ddph7MuvwQQ/exec"; 
+
+        const icons = {
+            chicken: '<circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path>',
+            snack: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line>',
+            drink: '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path>'
+        };
+
+        // Data Utama (Akan diisi dari server)
+        let mainMenu = [];
+        let mainUsers = [];
+        let mainReports = [];
+        
+        let cart = [];
+        let currentUser = null;
+        let currentReportDate = new Date();
+        let appReady = false;
+
+        const formatRp = (num) => 'Rp ' + parseInt(num).toLocaleString('id-ID');
+        
+        const showToast = (message, type = 'success') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'error' ? 'bg-red-500 text-white' : 'bg-navy text-yellow';
+            toast.className = `${bgColor} px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transform transition-all duration-300 translate-y-[-20px] opacity-0 border border-platinum/20`;
+            toast.innerHTML = `<span class="text-sm font-bold">${message}</span>`;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('translate-y-[-20px]', 'opacity-0'));
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+
+        async function fetchAPI(action, payload = null, retryCount = 1) {
+            if (GAS_URL === "URL_GAS_ANDA_DISINI" || GAS_URL.trim() === "") return null;
+            
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            
+            try {
+                let params = `?action=${action}`;
+                let options = {
+                    method: 'POST', // Selalu POST untuk mencegah caching agresif dan mempermudah payload
+                    redirect: 'follow', // Penting untuk bypass CORS Apps Script
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                };
+                
+                // Bungkus payload
+                const bodyData = { payload: payload || {} };
+                options.body = JSON.stringify(bodyData);
+                
+                const response = await fetch(GAS_URL + params, options);
+                const result = await response.json();
+                
+                document.getElementById('loading-overlay').classList.add('hidden');
+                
+                if (result.status === 'success') {
+                    return result.data;
+                } else {
+                    throw new Error(result.message || 'Kesalahan server');
+                }
+            } catch (error) {
+                if (retryCount > 0) {
+                    console.warn(`Mencoba ulang koneksi... (${retryCount}x)`);
+                    return fetchAPI(action, payload, retryCount - 1);
+                } else {
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                    showToast(error.message || "Gagal menghubungi server database", "error");
+                    return null;
+                }
+            }
+        }
+
+        window.onload = async () => {
+            if (GAS_URL === "URL_GAS_ANDA_DISINI") {
+                document.getElementById('gas-warning').classList.remove('hidden');
+            } else {
+                document.getElementById('loading-msg').innerText = "Memuat Database...";
+                const initialData = await fetchAPI('getInitialData', null, 2);
+                if (initialData) {
+                    mainMenu = initialData.menus || [];
+                    mainUsers = initialData.users || [];
+                    mainReports = initialData.reports || [];
+                    appReady = true;
+                    showToast("Sistem siap digunakan");
+                }
+            }
+        };
+
+        const handleLogin = () => {
+            if (GAS_URL === "URL_GAS_ANDA_DISINI") {
+                showToast("Hubungkan ke Google Script terlebih dahulu", "error");
+                return;
+            }
+            if(!appReady) {
+                showToast("Database belum selesai dimuat", "error");
+                return;
+            }
+
+            const pin = document.getElementById('pin-input').value;
+            const user = mainUsers.find(u => u.pin == pin);
+            
+            if(user) {
+                currentUser = user;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                document.getElementById('role-badge').innerText = `${currentUser.role} - ${currentUser.name}`;
+                
+                if(currentUser.role === 'Admin') {
+                    document.getElementById('admin-nav').classList.remove('hidden');
+                    document.getElementById('pos-view').classList.remove('pb-32');
+                    document.getElementById('pos-view').classList.add('pb-20');
+                    document.getElementById('cart-summary').classList.remove('bottom-0');
+                    document.getElementById('cart-summary').classList.add('bottom-[68px]');
+                } else {
+                    document.getElementById('admin-nav').classList.add('hidden');
+                    document.getElementById('pos-view').classList.add('pb-32');
+                    document.getElementById('pos-view').classList.remove('pb-20');
+                    document.getElementById('cart-summary').classList.add('bottom-0');
+                    document.getElementById('cart-summary').classList.remove('bottom-[68px]');
+                }
+                
+                renderMenu();
+                renderAdminMenu();
+                renderAdminReport();
+                renderAdminUsers();
+                showToast(`Selamat datang, ${currentUser.name}`);
+            } else {
+                showToast('PIN tidak ditemukan!', 'error');
+            }
+        };
+
+        const handleLogout = () => {
+            currentUser = null;
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('pin-input').value = '';
+            document.getElementById('cart-summary').classList.add('bottom-0');
+            document.getElementById('cart-summary').classList.remove('bottom-[68px]');
+            clearCart();
+            switchView('pos');
+        };
+
+        const switchView = (view) => {
+            const views = { pos: document.getElementById('pos-view'), menu: document.getElementById('admin-menu-view'), report: document.getElementById('admin-report-view'), user: document.getElementById('admin-user-view') };
+            const navs = { pos: document.getElementById('nav-pos'), menu: document.getElementById('nav-menu'), report: document.getElementById('nav-report'), user: document.getElementById('nav-user') };
+
+            Object.values(views).forEach(v => v.classList.add('hidden'));
+            Object.values(navs).forEach(n => { n?.classList.remove('text-yellow'); n?.classList.add('text-navy/40'); });
+
+            views[view].classList.remove('hidden');
+            if(navs[view]) { navs[view].classList.remove('text-navy/40'); navs[view].classList.add('text-yellow'); }
+
+            if(view === 'pos') document.getElementById('cart-summary').classList.remove('hidden');
+            else document.getElementById('cart-summary').classList.add('hidden');
+        };
+
+        const renderMenu = () => {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            if(mainMenu.length === 0) {
+                 grid.innerHTML = `<div class="col-span-2 text-center text-sm font-bold text-navy/40 py-10">Menu belum tersedia. Hubungi Admin.</div>`;
+                 return;
+            }
+            mainMenu.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "bento-card p-3 flex flex-col items-start justify-between h-28 active:scale-95 transition-all text-left hover:border-yellow focus:outline-none focus:ring-2 focus:ring-yellow relative overflow-hidden group";
+                const svgIcon = `<svg class="w-10 h-10 text-platinum absolute -bottom-2 -right-2 transform group-hover:scale-110 group-hover:text-yellow/40 transition-all icon-svg" viewBox="0 0 24 24">${icons[item.icon]}</svg>`;
+
+                if (item.type === 'popup') {
+                    btn.onclick = () => openVariantModal();
+                    btn.innerHTML = `
+                        <div class="z-10 w-full">
+                            <span class="font-bold text-sm text-navy leading-tight block mb-1">${item.name}</span>
+                            <span class="text-[10px] font-bold text-navy bg-yellow px-1.5 py-0.5 rounded border border-yellow/50 shadow-sm">Pilih Ukuran</span>
+                        </div>
+                        ${svgIcon}
+                    `;
+                } else {
+                    btn.onclick = () => addToCart(item.name, item.price);
+                    btn.innerHTML = `
+                        <div class="z-10">
+                            <span class="font-bold text-sm text-navy leading-tight block">${item.name}</span>
+                            <span class="text-sm font-bold text-navy mt-1 block bg-platinum px-1.5 py-0.5 rounded-md inline-block">${formatRp(item.price)}</span>
+                        </div>
+                        ${svgIcon}
+                    `;
+                }
+                grid.appendChild(btn);
+            });
+        };
+
+        const openVariantModal = () => {
+            const modal = document.getElementById('modal-variant');
+            const content = document.getElementById('modal-variant-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => content.classList.remove('scale-95'), 50);
+        };
+
+        const closeVariantModal = () => {
+            const content = document.getElementById('modal-variant-content');
+            content.classList.add('scale-95');
+            setTimeout(() => document.getElementById('modal-variant').classList.add('hidden'), 200);
+        };
+
+        const addVariantToCart = (name, price) => { addToCart(name, price); closeVariantModal(); };
+
+        const addToCart = (name, price) => {
+            const existing = cart.find(item => item.name === name);
+            if(existing) existing.qty += 1;
+            else cart.push({ name, price, qty: 1 });
+            updateCartUI();
+            showToast(`${name} ditambahkan!`);
+        };
+
+        const adjustQty = (index, delta) => {
+            cart[index].qty += delta;
+            if(cart[index].qty <= 0) cart.splice(index, 1);
+            updateCartUI();
+        };
+
+        const clearCart = () => {
+            cart = [];
+            updateCartUI();
+            const sheet = document.getElementById('cart-sheet');
+            if(!sheet.classList.contains('translate-y-full')) toggleCartSheet();
+        };
+
+        const updateCartUI = () => {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            
+            document.getElementById('cart-total-summary').innerText = formatRp(total);
+            document.getElementById('cart-total-final').innerText = formatRp(total);
+            
+            const badge = document.getElementById('cart-badge');
+            if(totalQty > 0) { badge.innerText = totalQty; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
+
+            const wrapper = document.getElementById('cart-items-wrapper');
+            const emptyMsg = document.getElementById('empty-cart-msg');
+            wrapper.innerHTML = ''; 
+
+            if (cart.length === 0) {
+                emptyMsg.classList.remove('hidden');
+            } else {
+                emptyMsg.classList.add('hidden');
+                cart.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = "flex justify-between items-center p-3 bg-white border border-platinum rounded-xl shadow-sm";
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <p class="font-bold text-navy text-sm leading-tight">${item.name}</p>
+                            <p class="text-xs text-navy/70 font-bold">${formatRp(item.price)}</p>
+                        </div>
+                        <div class="flex items-center gap-3 bg-platinum/50 rounded-lg p-1 border border-platinum">
+                            <button onclick="adjustQty(${index}, -1)" class="w-8 h-8 flex items-center justify-center text-navy bg-white rounded shadow-sm font-bold active:scale-90">-</button>
+                            <span class="w-4 text-center font-bold text-navy text-sm">${item.qty}</span>
+                            <button onclick="adjustQty(${index}, 1)" class="w-8 h-8 flex items-center justify-center text-navy bg-white rounded shadow-sm font-bold active:scale-90">+</button>
+                        </div>
+                    `;
+                    wrapper.appendChild(div);
+                });
+            }
+        };
+
+        const toggleCartSheet = () => {
+            const sheet = document.getElementById('cart-sheet');
+            sheet.classList.toggle('translate-y-full');
+        };
+
+        const processCheckout = async () => {
+            if(cart.length === 0) {
+                showToast('Keranjang masih kosong!', 'error');
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            
+            const transactionData = {
+                id: 'TRX' + Date.now(),
+                date: dateStr,
+                total: total,
+                kasir: currentUser ? currentUser.name : 'Unknown',
+                items: cart
+            };
+
+            document.getElementById('loading-msg').innerText = "Menyimpan Transaksi...";
+            const result = await fetchAPI('saveTransaction', transactionData);
+            
+            if(result) {
+                // Update local report data immediately for UI
+                let rep = mainReports.find(r => r.date === dateStr);
+                if(rep) { rep.trx += 1; rep.omset += total; } 
+                else { mainReports.push({ date: dateStr, trx: 1, omset: total }); }
+                renderAdminReport();
+
+                // Format RAWBT Cetak
+                let receiptText = `NURHAYATI CHICKEN\n`;
+                receiptText += `Klumprit, Rt 01 RW 01, Surojoyo,\n`;
+                receiptText += `Candimulyo, Magelang\n`;
+                receiptText += `(Depan lapangan Candimulyo)\n`;
+                receiptText += `================================\n`;
+                cart.forEach(item => {
+                    receiptText += `${item.name}\n`;
+                    receiptText += `${item.qty} x ${item.price} = ${item.qty * item.price}\n`;
+                });
+                receiptText += `================================\n`;
+                receiptText += `TOTAL: ${total}\n`;
+                receiptText += `================================\n`;
+                receiptText += `Kasir: ${transactionData.kasir}\n`;
+                receiptText += `Terima Kasih\n`;
+
+                const encoded = encodeURI(receiptText);
+                const intentUrl = `intent://${encoded}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+
+                showToast('Transaksi Berhasil! Mencetak...');
+                clearCart();
+                
+                setTimeout(() => {
+                    try {
+                        const a = document.createElement('a');
+                        a.href = intentUrl;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    } catch (e) {
+                        console.warn("Intent ditolak oleh browser pratinjau.");
+                        showToast("Cetak RAWBT hanya berjalan di Android", "error");
+                    }
+                }, 500);
+            }
+        };
+
+        const renderAdminMenu = () => {
+            const list = document.getElementById('admin-menu-list');
+            list.innerHTML = '';
+            mainMenu.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center p-3 bento-card";
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-platinum rounded-lg flex items-center justify-center text-navy/40">
+                            <svg class="w-6 h-6 icon-svg" viewBox="0 0 24 24">${icons[item.icon]}</svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-sm text-navy">${item.name}</p>
+                            <p class="text-xs text-navy/60 font-bold">${item.type === 'popup' ? 'Variasi Ukuran' : formatRp(item.price)}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openMenuForm('${item.id}')" class="p-2 text-navy bg-yellow rounded-lg active:scale-95 shadow-sm"><svg class="w-4 h-4 icon-svg" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
+                        <button onclick="deleteMenu('${item.id}')" class="p-2 text-white bg-red-500 rounded-lg active:scale-95 shadow-sm"><svg class="w-4 h-4 icon-svg" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        };
+
+        const openMenuForm = (id = null) => {
+            const modal = document.getElementById('modal-menu-form');
+            const content = document.getElementById('modal-menu-form-content');
+            
+            document.getElementById('form-menu-id').value = id || '';
+            document.getElementById('menu-form-title').innerText = id ? 'Edit Menu' : 'Tambah Menu';
+            
+            if(id) {
+                const item = mainMenu.find(i => i.id == id);
+                document.getElementById('form-menu-name').value = item.name;
+                document.getElementById('form-menu-price').value = item.price;
+                document.getElementById('form-menu-icon').value = `${item.icon}_${item.type}`;
+            } else {
+                document.getElementById('form-menu-name').value = '';
+                document.getElementById('form-menu-price').value = '';
+                document.getElementById('form-menu-icon').value = 'chicken_normal';
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => content.classList.remove('scale-95'), 50);
+        };
+
+        const closeMenuForm = () => {
+            const content = document.getElementById('modal-menu-form-content');
+            content.classList.add('scale-95');
+            setTimeout(() => document.getElementById('modal-menu-form').classList.add('hidden'), 200);
+        };
+
+        const saveMenu = async () => {
+            const id = document.getElementById('form-menu-id').value;
+            const name = document.getElementById('form-menu-name').value;
+            const price = document.getElementById('form-menu-price').value;
+            const iconType = document.getElementById('form-menu-icon').value.split('_');
+            const icon = iconType[0];
+            const type = iconType[1];
+
+            if(!name || !price) { showToast('Isi data dengan lengkap!', 'error'); return; }
+
+            const payload = {
+                id: id || 'M' + Date.now(),
+                name: name,
+                price: parseInt(price),
+                icon: icon,
+                type: type,
+                isNew: !id
+            };
+
+            document.getElementById('loading-msg').innerText = "Menyimpan Menu...";
+            const result = await fetchAPI('saveMenu', payload);
+            
+            if(result) {
+                if(payload.isNew) {
+                    mainMenu.push(payload);
+                } else {
+                    const idx = mainMenu.findIndex(i => i.id == id);
+                    if(idx !== -1) mainMenu[idx] = payload;
+                }
+                closeMenuForm();
+                renderAdminMenu();
+                renderMenu();
+                showToast('Menu berhasil disimpan');
+            }
+        };
+
+        const deleteMenu = async (id) => {
+            document.getElementById('loading-msg').innerText = "Menghapus Menu...";
+            const result = await fetchAPI('deleteMenu', { id: id });
+            if(result) {
+                mainMenu = mainMenu.filter(i => i.id != id);
+                renderAdminMenu();
+                renderMenu();
+                showToast('Menu dihapus');
+            }
+        };
+
+        const changeReportMonth = (delta) => {
+            currentReportDate.setMonth(currentReportDate.getMonth() + delta);
+            renderAdminReport();
+        };
+
+        const renderAdminReport = () => {
+            const list = document.getElementById('report-date-list');
+            list.innerHTML = '';
+            
+            let totalOmset = 0;
+            let totalTrx = 0;
+
+            const targetYear = currentReportDate.getFullYear();
+            const targetMonth = currentReportDate.getMonth();
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('report-month-label').innerText = `${monthNames[targetMonth]} ${targetYear}`;
+
+            const filteredReports = mainReports.filter(rep => {
+                const [rYear, rMonth] = rep.date.split('-');
+                return parseInt(rYear) === targetYear && parseInt(rMonth) === (targetMonth + 1);
+            });
+
+            if (filteredReports.length === 0) {
+                list.innerHTML = '<div class="text-center text-navy/40 mt-10 text-sm font-bold">Belum ada transaksi di bulan ini</div>';
+            } else {
+                filteredReports.forEach(rep => {
+                    totalOmset += rep.omset;
+                    totalTrx += rep.trx;
+                    
+                    const [y, m, d] = rep.date.split('-');
+                    const dateObj = new Date(y, m - 1, d);
+                    const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+
+                    const div = document.createElement('div');
+                    div.className = "flex justify-between items-center p-3 bento-card border-l-4 border-l-yellow";
+                    div.innerHTML = `
+                        <div class="flex-1">
+                            <p class="font-bold text-sm text-navy">${dateStr}</p>
+                            <p class="text-xs text-navy/60">${rep.trx} Transaksi</p>
+                            <p class="font-bold text-navy mt-1">${formatRp(rep.omset)}</p>
+                        </div>
+                        <button onclick="printRecap('${rep.date}')" class="p-2 bg-navy text-yellow rounded-lg active:scale-95 flex items-center justify-center gap-1 shadow-sm">
+                            <svg class="w-5 h-5 icon-svg" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            <span class="text-xs font-bold">Cetak</span>
+                        </button>
+                    `;
+                    list.appendChild(div);
+                });
+            }
+            document.getElementById('total-omset-month').innerText = formatRp(totalOmset);
+            document.getElementById('total-trx-month').innerText = totalTrx;
+        };
+
+        const printRecap = (dateString) => {
+            const rep = mainReports.find(r => r.date === dateString);
+            if(!rep) return;
+            
+            let text = `REKAPITULASI HARIAN\n`;
+            text += `NURHAYATI CHICKEN\n`;
+            text += `Tanggal: ${dateString}\n`;
+            text += `================================\n`;
+            text += `Total Transaksi : ${rep.trx}\n`;
+            text += `Total Omset     : ${rep.omset}\n`;
+            text += `================================\n`;
+
+            const encoded = encodeURI(text);
+            const intentUrl = `intent://${encoded}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
+            
+            showToast('Mencetak rekap...');
+            setTimeout(() => { 
+                try {
+                    const a = document.createElement('a');
+                    a.href = intentUrl;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } catch (e) {
+                    showToast("Cetak RAWBT hanya berjalan di Android", "error");
+                }
+            }, 500);
+        };
+
+        const renderAdminUsers = () => {
+            const list = document.getElementById('admin-user-list');
+            list.innerHTML = '';
+            mainUsers.forEach(user => {
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center p-3 bento-card";
+                const isCurrent = currentUser && currentUser.id == user.id;
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-platinum rounded-full flex items-center justify-center text-navy font-bold text-sm uppercase">
+                            ${user.name.substring(0, 2)}
+                        </div>
+                        <div>
+                            <p class="font-bold text-sm text-navy">${user.name} ${isCurrent ? '<span class="text-[9px] bg-yellow text-navy px-1 rounded-sm ml-1">Saya</span>' : ''}</p>
+                            <p class="text-xs text-navy/60 font-bold">${user.role} • PIN: ${user.pin}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="openUserForm('${user.id}')" class="p-2 text-navy bg-yellow rounded-lg active:scale-95 shadow-sm"><svg class="w-4 h-4 icon-svg" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
+                        ${!isCurrent ? `<button onclick="deleteUser('${user.id}')" class="p-2 text-white bg-red-500 rounded-lg active:scale-95 shadow-sm"><svg class="w-4 h-4 icon-svg" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>` : `<div class="w-8"></div>`}
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        };
+
+        const openUserForm = (id = null) => {
+            const modal = document.getElementById('modal-user-form');
+            const content = document.getElementById('modal-user-form-content');
+            
+            document.getElementById('form-user-id').value = id || '';
+            document.getElementById('user-form-title').innerText = id ? 'Edit Data Staf' : 'Tambah Staf Baru';
+            
+            if(id) {
+                const user = mainUsers.find(u => u.id == id);
+                document.getElementById('form-user-name').value = user.name;
+                document.getElementById('form-user-pin').value = user.pin;
+                document.getElementById('form-user-role').value = user.role;
+            } else {
+                document.getElementById('form-user-name').value = '';
+                document.getElementById('form-user-pin').value = '';
+                document.getElementById('form-user-role').value = 'Kasir';
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => content.classList.remove('scale-95'), 50);
+        };
+
+        const closeUserForm = () => {
+            const content = document.getElementById('modal-user-form-content');
+            content.classList.add('scale-95');
+            setTimeout(() => document.getElementById('modal-user-form').classList.add('hidden'), 200);
+        };
+
+        const saveUser = async () => {
+            const id = document.getElementById('form-user-id').value;
+            const name = document.getElementById('form-user-name').value;
+            const pin = document.getElementById('form-user-pin').value;
+            const role = document.getElementById('form-user-role').value;
+
+            if(!name || !pin) { showToast('Isi nama dan PIN!', 'error'); return; }
+
+            const payload = {
+                id: id || 'U' + Date.now(),
+                name: name,
+                pin: pin,
+                role: role,
+                isNew: !id
+            };
+
+            document.getElementById('loading-msg').innerText = "Menyimpan Data Staf...";
+            const result = await fetchAPI('saveUser', payload);
+            
+            if(result) {
+                if(payload.isNew) {
+                    mainUsers.push(payload);
+                } else {
+                    const idx = mainUsers.findIndex(u => u.id == id);
+                    if(idx !== -1) mainUsers[idx] = payload;
+                    if(currentUser.id == id) {
+                        currentUser = payload;
+                        document.getElementById('role-badge').innerText = `${currentUser.role} - ${currentUser.name}`;
+                    }
+                }
+                closeUserForm();
+                renderAdminUsers();
+                showToast('Data Staf disimpan');
+            }
+        };
+
+        const deleteUser = async (id) => {
+            document.getElementById('loading-msg').innerText = "Menghapus Staf...";
+            const result = await fetchAPI('deleteUser', { id: id });
+            if(result) {
+                mainUsers = mainUsers.filter(u => u.id != id);
+                renderAdminUsers();
+                showToast('Data Staf dihapus');
+            }
+        };
+    </script>
+</body>
+</html>
